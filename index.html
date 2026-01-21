@@ -254,7 +254,6 @@
         .category-method { background: linear-gradient(135deg, #ff5e62, #ff9966); color: white; }
         .category-bin { background: linear-gradient(135deg, #2193b0, #6dd5ed); color: white; }
         .category-paynow { background: linear-gradient(135deg, #654ea3, #eaafc8); color: white; }
-        .category-other { background: linear-gradient(135deg, #8e2de2, #4a00e0); color: white; }
 
         /* Premium Gradient Text */
         .gradient-text {
@@ -315,8 +314,8 @@
             <div class="glass-panel p-8 rounded-[35px] shadow-2xl relative overflow-hidden animate-pop-up">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-[50px] animate-float"></div>
                 <div class="flex bg-black/50 p-1 rounded-xl mb-6 border border-white/5">
-                    <button onclick="toggleAuth('login')" id="tab-login" class="flex-1 py-3 rounded-lg text-xs font-black uppercase transition-all tab-active">Login</button>
-                    <button onclick="toggleAuth('signup')" id="tab-signup" class="flex-1 py-3 rounded-lg text-xs font-black uppercase transition-all text-gray-500 hover:text-white hover:bg-white/5">Sign Up</button>
+                    <button onclick="toggleAuth('login')" id="tab-login" class="tab-btn flex-1 py-3 rounded-lg text-xs font-black uppercase transition-all tab-active">Login</button>
+                    <button onclick="toggleAuth('signup')" id="tab-signup" class="tab-btn flex-1 py-3 rounded-lg text-xs font-black uppercase transition-all tab-inactive">Sign Up</button>
                 </div>
                 <div id="form-container">
                     <div id="input-name-group" class="mb-4 hidden animate-fade-in">
@@ -406,7 +405,12 @@
                         <p id="p-wallet-name" class="text-xs font-bold text-white/80 uppercase tracking-widest">---</p>
                         <p class="text-[9px] font-mono text-white/30 mt-1">VALID THROUGH 12/29</p>
                     </div>
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" class="h-8 opacity-50 grayscale hover:grayscale-0 transition-all">
+                    <!-- Colorful MasterCard Logo -->
+                    <div class="flex items-center">
+                        <div class="w-10 h-6 bg-red-500 rounded-l-full"></div>
+                        <div class="w-10 h-6 bg-yellow-500 rounded-r-full -ml-2"></div>
+                        <span class="ml-2 text-sm font-black italic text-white opacity-80">MasterCard</span>
+                    </div>
                 </div>
             </div>
 
@@ -802,22 +806,11 @@
             }
         }
 
-        // Enhanced dynamic price calculation
+        // Simple price calculation - NO EXTRA CHARGES
         function calculateDynamicPrice(p) {
             if (!p || !p.price) return 0;
-            let basePrice = parseInt(p.price);
-            
-            // Apply Indo dynamic pricing
-            if (p.type && p.type.toLowerCase().includes('indo')) {
-                const age = getProductAge(p.addedOn);
-                if (age) {
-                    const days = parseInt(age);
-                    if (!isNaN(days)) {
-                        return basePrice + days;
-                    }
-                }
-            }
-            return basePrice;
+            // Just return the base price - no extra charges
+            return parseInt(p.price);
         }
 
         // Enhanced date formatting
@@ -884,27 +877,38 @@
             }
         });
 
-        // Enhanced auth toggle
+        // FIXED: Enhanced auth toggle - Now working perfectly
         window.toggleAuth = function(mode) {
             currentAuthMode = mode;
-            const btnLogin = document.getElementById('tab-login');
-            const btnSignup = document.getElementById('tab-signup');
+            const loginBtn = document.getElementById('tab-login');
+            const signupBtn = document.getElementById('tab-signup');
             const nameGroup = document.getElementById('input-name-group');
             const actionBtn = document.getElementById('btn-auth-action');
             
+            // Reset both buttons
+            loginBtn.classList.remove('tab-active', 'tab-inactive');
+            signupBtn.classList.remove('tab-active', 'tab-inactive');
+            
             if(mode === 'signup') {
-                btnLogin.classList.remove('tab-active');
-                btnLogin.classList.add('text-gray-500', 'hover:text-white', 'hover:bg-white/5');
-                btnSignup.classList.remove('text-gray-500', 'hover:text-white', 'hover:bg-white/5');
-                btnSignup.classList.add('tab-active');
+                // Set signup as active
+                signupBtn.classList.add('tab-active');
+                loginBtn.classList.add('tab-inactive');
+                
+                // Show name field
                 nameGroup.classList.remove('hidden');
+                nameGroup.classList.add('animate-fade-in');
+                
+                // Change button text
                 actionBtn.innerText = "Create Account";
             } else {
-                btnSignup.classList.remove('tab-active');
-                btnSignup.classList.add('text-gray-500', 'hover:text-white', 'hover:bg-white/5');
-                btnLogin.classList.remove('text-gray-500', 'hover:text-white', 'hover:bg-white/5');
-                btnLogin.classList.add('tab-active');
+                // Set login as active
+                loginBtn.classList.add('tab-active');
+                signupBtn.classList.add('tab-inactive');
+                
+                // Hide name field
                 nameGroup.classList.add('hidden');
+                
+                // Change button text
                 actionBtn.innerText = "Enter Store";
             }
         }
@@ -970,6 +974,11 @@
                     id: key,
                     ...data[key]
                 }));
+                // Filter out "Other" category products
+                products = products.filter(p => {
+                    const type = (p.type || '').toLowerCase();
+                    return type !== 'other';
+                });
                 renderGrid(); 
             } else {
                 products = [];
@@ -1076,7 +1085,7 @@
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center gap-2 mb-0.5">
-                            <span class="text-[7px] font-black text-white/40 uppercase tracking-widest bg-white/5 px-1.5 py-0.5 rounded-md">${p.type || 'Other'}</span>
+                            <span class="text-[7px] font-black text-white/40 uppercase tracking-widest bg-white/5 px-1.5 py-0.5 rounded-md">${p.type || 'Product'}</span>
                             ${ageText ? `<span class="text-[7px] font-black text-yellow-500 uppercase tracking-widest bg-yellow-500/10 px-1.5 py-0.5 rounded-md">${ageText}</span>` : ''}
                             <span class="text-[7px] font-bold ${stockColor} uppercase">Stock: ${stock}</span>
                         </div>
@@ -1165,7 +1174,7 @@
             m.classList.remove('flex');
         }
 
-        // Enhanced purchase processing
+        // Purchase processing with exact price deduction
         window.processPurchase = async function() {
             if(!selectedProduct || !UID) {
                 showToast('Invalid request', 'error');
@@ -1175,7 +1184,7 @@
             const finalPrice = calculateDynamicPrice(selectedProduct);
             const stock = parseInt(selectedProduct.stock) || 0;
             
-            // Check balance
+            // Check balance - EXACT MATCH
             if(balance < finalPrice) { 
                 showToast('Insufficient Balance. Add funds first!', 'error'); 
                 closeConfirmModal(); 
@@ -1195,44 +1204,51 @@
             btn.disabled = true;
             
             try {
-                // Transaction: Deduct balance and reduce stock
+                // Create transaction data
+                const newBalance = balance - finalPrice;
+                const newStock = stock - 1;
+                const transactionId = 'NCX-' + Date.now() + Math.floor(Math.random() * 1000);
+                
+                // Prepare all updates
                 const updates = {};
-                updates[`users/${UID}/balance`] = balance - finalPrice;
-                updates[`products/${selectedProduct.id}/stock`] = stock - 1;
+                
+                // Update user balance
+                updates[`users/${UID}/balance`] = newBalance;
+                
+                // Update product stock
+                updates[`products/${selectedProduct.id}/stock`] = newStock;
                 
                 // Add to purchase history
-                const purchaseRef = push(ref(db, `users/${UID}/purchaseHistory`));
-                const purchaseData = { 
+                const purchaseKey = `users/${UID}/purchaseHistory/${transactionId}`;
+                updates[purchaseKey] = { 
                     title: selectedProduct.title, 
                     price: finalPrice, 
                     date: new Date().toISOString(), 
                     data: selectedProduct.data || '',
                     type: selectedProduct.type,
                     productId: selectedProduct.id,
-                    transactionId: 'NCX-' + Date.now()
+                    transactionId: transactionId
                 };
-                
-                updates[`users/${UID}/purchaseHistory/${purchaseRef.key}`] = purchaseData;
                 
                 // Update all at once
                 await update(ref(db), updates);
                 
                 // Update local state
-                balance = balance - finalPrice;
+                balance = newBalance;
                 document.getElementById('display-balance').innerText = balance;
                 document.getElementById('header-balance').innerText = balance;
                 
                 // Update product stock locally
-                selectedProduct.stock = stock - 1;
+                selectedProduct.stock = newStock;
                 
                 // Close confirm modal and show success
                 closeConfirmModal();
                 document.getElementById('buy-view').classList.add('hidden');
                 document.getElementById('success-view').classList.remove('hidden');
                 document.getElementById('purchased-data').value = selectedProduct.data || 'No data available';
-                document.getElementById('success-tx-id').innerText = purchaseData.transactionId;
+                document.getElementById('success-tx-id').innerText = transactionId;
                 
-                showToast('Purchase successful!', 'success');
+                showToast('Purchase successful! ₹' + finalPrice + ' deducted', 'success');
                 
                 // Re-render grid to update stock
                 renderGrid();
