@@ -405,12 +405,8 @@
                         <p id="p-wallet-name" class="text-xs font-bold text-white/80 uppercase tracking-widest">---</p>
                         <p class="text-[9px] font-mono text-white/30 mt-1">VALID THROUGH 12/29</p>
                     </div>
-                    <!-- Colorful MasterCard Logo -->
-                    <div class="flex items-center">
-                        <div class="w-10 h-6 bg-red-500 rounded-l-full"></div>
-                        <div class="w-10 h-6 bg-yellow-500 rounded-r-full -ml-2"></div>
-                        <span class="ml-2 text-sm font-black italic text-white opacity-80">MasterCard</span>
-                    </div>
+                    <!-- Original MasterCard Logo -->
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" class="h-8 opacity-50 grayscale hover:grayscale-0 transition-all">
                 </div>
             </div>
 
@@ -974,10 +970,20 @@
                     id: key,
                     ...data[key]
                 }));
-                // Filter out "Other" category products
+                // Filter out "Other" category products and products with price <= 0
                 products = products.filter(p => {
                     const type = (p.type || '').toLowerCase();
-                    return type !== 'other';
+                    const price = parseInt(p.price) || 0;
+                    
+                    // Remove "other" category and products with price <= 0
+                    if (type === 'other') return false;
+                    if (price <= 0) return false;
+                    
+                    // Only allow specific categories
+                    const allowedCategories = ['indo', 'cc', 'bin', 'paynow', 'method'];
+                    const hasAllowedCategory = allowedCategories.some(cat => type.includes(cat));
+                    
+                    return hasAllowedCategory;
                 });
                 renderGrid(); 
             } else {
@@ -1055,8 +1061,12 @@
                 });
             }
             
-            // Filter out out-of-stock products
-            filtered = filtered.filter(p => p.stock > 0);
+            // Filter out out-of-stock products and products with price <= 0
+            filtered = filtered.filter(p => {
+                const stock = parseInt(p.stock) || 0;
+                const price = parseInt(p.price) || 0;
+                return stock > 0 && price > 0;
+            });
             
             if(filtered.length === 0) {
                 grid.innerHTML = `
