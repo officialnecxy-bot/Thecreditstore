@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NECXY STORE | PREMIUM</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: { 
+                        primary: '#FF003C', 
+                        glass: '#121212',
+                        dark: '#050505',
+                        card: '#0F0F0F',
+                        accent: '#22C55E',
+                        indo: '#833ab4',
+                        method: '#ff5e62',
+                        cc: '#11998e',
+                        bin: '#2193b0',
+                        paynow: '#654ea3'
+                    },
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                    animation: { 
+                        'fade-in': 'fadeIn 0.3s ease-out', 
+                        'pop-up': 'popUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)', 
+                        'slide-down': 'slideDown 0.3s ease-out', 
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'confetti': 'confetti 0.5s ease-out forwards',
+                        'float': 'float 3s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'slide-in-right': 'slideInRight 0.3s ease-out',
+                        'slide-in-left': 'slideInLeft 0.3s ease-out'
+                    },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        popUp: { '0%': { transform: 'scale(0.95) translateY(20px)', opacity: '0' }, '100%': { transform: 'scale(1) translateY(0)', opacity: '1' } },
+                        slideDown: { '0%': { transform: 'translateY(-20px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
+                        confetti: { '0%': { transform: 'translateY(0) scale(0)', opacity: '0' }, '50%': { opacity: '1' }, '100%': { transform: 'translateY(-50px) scale(1.2)', opacity: '0' } },
+                        float: { '0%, 100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-10px)' } },
+                        glow: { '0%': { boxShadow: '0 0 10px rgba(255,0,60,0.3)' }, '100%': { boxShadow: '0 0 20px rgba(255,0,60,0.6)' } },
+                        slideInRight: { '0%': { transform: 'translateX(100%)', opacity: '0' }, '100%': { transform: 'translateX(0)', opacity: '1' } },
+                        slideInLeft: { '0%': { transform: 'translateX(-100%)', opacity: '0' }, '100%': { transform: 'translateX(0)', opacity: '1' } }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body { background-color: #050505; color: white; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        #auth-screen { position: fixed; inset: 0; z-index: 999; background: linear-gradient(135deg, #050505 0%, #0a0a0a 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .app-layout { padding-top: 90px; padding-bottom: 100px; display: none; }
+        #maintenance-screen { position: fixed; inset: 0; z-index: 9999; background: linear-gradient(135deg, #050505 0%, #0a0a0a 100%); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
+        
+        /* Premium Glass Effect */
+        .glass-panel { 
+            background: linear-gradient(135deg, rgba(15, 15, 15, 0.85) 0%, rgba(10, 10, 10, 0.85) 100%); 
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Premium Product Card */
+        .product-card { 
+            background: linear-gradient(160deg, rgba(18, 18, 18, 0.9) 0%, rgba(8, 8, 8, 0.9) 100%); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+            position: relative; 
+            overflow: hidden; 
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .product-card:before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 0, 60, 0.05) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 0;
+        }
+        .product-card:hover:before {
+            opacity: 1;
+        }
+        .product-card:hover { 
+            transform: translateY(-5px) scale(1.02); 
+            border-color: rgba(255, 0, 60, 0.3); 
+            box-shadow: 0 15px 40px rgba(255, 0, 60, 0.2);
+        }
+        .product-card:active { transform: translateY(0) scale(0.98); border-color: #FF003C; }
+        
+        .big-modal { 
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.95) 0%, rgba(5, 5, 5, 0.95) 100%); 
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9), 0 0 50px rgba(255, 0, 60, 0.2); 
+            width: 100%; 
+            max-width: 420px; 
+            border-radius: 32px; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            max-height: 85vh; 
+        }
+        
+        .insta-icon { background: -webkit-linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .nav-active { 
+            color: #FF003C; 
+            transform: translateY(-3px); 
+            text-shadow: 0 5px 15px rgba(255,0,60,0.4); 
+            position: relative;
+        }
+        .nav-active:before {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: #FF003C;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255,0,60,0.5);
+        }
+        
+        .tab-active { 
+            background: linear-gradient(135deg, #FF003C 0%, #CC002F 100%); 
+            color: white; 
+            border: none; 
+            box-shadow: 0 4px 15px rgba(255,0,60,0.4), 0 0 15px rgba(255,0,60,0.2);
+            transform: translateY(-1px);
+        }
+        .tab-inactive { 
+            background: linear-gradient(135deg, rgba(21, 21, 21, 0.8) 0%, rgba(10, 10, 10, 0.8) 100%); 
+            color: #888; 
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+        
+        .loader { width: 18px; height: 18px; border: 2px solid #FFF; border-bottom-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; }
+        
+        /* Premium Wallet Card */
+        .wallet-card {
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(10, 10, 10, 0.9) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+        }
+        .wallet-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 0, 60, 0.08) 0%, transparent 70%);
+            z-index: 1;
+            animation: float 6s ease-in-out infinite;
+        }
+        .wallet-chip {
+            width: 45px;
+            height: 35px;
+            background: linear-gradient(135deg, #ffd700 0%, #b8860b 100%);
+            border-radius: 6px;
+            position: relative;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+        
+        /* Premium Success View */
+        .success-glow {
+            box-shadow: 0 0 40px rgba(34, 197, 94, 0.3), inset 0 0 20px rgba(34, 197, 94, 0.1);
+        }
+        .data-box {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(10, 10, 10, 0.9) 100%);
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            box-shadow: inset 0 0 20px rgba(34, 197, 94, 0.05), 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Premium Header */
+        .premium-header {
+            background: linear-gradient(135deg, rgba(5, 5, 5, 0.95) 0%, rgba(10, 10, 10, 0.95) 100%);
+            backdrop-filter: blur(50px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Premium Bottom Nav */
+        .premium-nav {
+            background: linear-gradient(135deg, rgba(5, 5, 5, 0.98) 0%, rgba(10, 10, 10, 0.98) 100%);
+            backdrop-filter: blur(50px);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Premium Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #FF003C 0%, #CC002F 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 5px 20px rgba(255, 0, 60, 0.4), 0 0 15px rgba(255, 0, 60, 0.2);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .btn-primary:before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s;
+        }
+        .btn-primary:hover:before {
+            left: 100%;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 0, 60, 0.5), 0 0 20px rgba(255, 0, 60, 0.3);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        /* Category Badges */
+        .category-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 2px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .category-indo { background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); color: white; }
+        .category-cc { background: linear-gradient(135deg, #11998e, #38ef7d); color: white; }
+        .category-method { background: linear-gradient(135deg, #ff5e62, #ff9966); color: white; }
+        .category-bin { background: linear-gradient(135deg, #2193b0, #6dd5ed); color: white; }
+        .category-paynow { background: linear-gradient(135deg, #654ea3, #eaafc8); color: white; }
+        .category-other { background: linear-gradient(135deg, #8e2de2, #4a00e0); color: white; }
+
+        /* Premium Gradient Text */
+        .gradient-text {
+            background: linear-gradient(135deg, #FF003C 0%, #22C55E 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Premium Loading Skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #111 25%, #1a1a1a 50%, #111 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="relative overflow-x-hidden min-h-screen">
+
+    <!-- Toast Area -->
+    <div id="toast-area" class="fixed top-24 left-0 right-0 z-[200] flex flex-col items-center gap-3 pointer-events-none px-4"></div>
+
+    <!-- Maintenance Screen -->
+    <div id="maintenance-screen">
+        <div class="relative mb-8">
+            <div class="absolute inset-0 bg-primary/20 blur-[50px] rounded-full animate-pulse-slow"></div>
+            <i class="fa-solid fa-triangle-exclamation text-8xl text-primary relative z-10 drop-shadow-[0_0_30px_rgba(255,0,60,0.6)]"></i>
+        </div>
+        <h1 class="text-3xl font-black uppercase text-white mb-2 tracking-tighter gradient-text">System Offline</h1>
+        <p class="text-gray-500 text-sm max-w-[250px] mx-auto leading-relaxed">The store is currently undergoing critical updates. Please check back later.</p>
+        <div class="mt-10 p-4 rounded-xl bg-[#111] border border-white/5 w-full max-w-xs backdrop-blur-xl">
+            <p class="text-[10px] font-bold text-gray-600 uppercase mb-2">Support Channel</p>
+            <a href="#" id="maint-link" target="_blank" class="flex items-center justify-center gap-2 text-white font-bold text-xs uppercase hover:text-primary transition"><i class="fa-brands fa-telegram text-lg"></i> Join Telegram</a>
+        </div>
+    </div>
+
+    <!-- Auth Screen -->
+    <div id="auth-screen">
+        <div class="w-full max-w-sm">
+            <div class="text-center mb-10 animate-fade-in">
+                <div class="relative mb-6">
+                    <div class="absolute inset-0 bg-primary/20 blur-[50px] rounded-full animate-pulse-slow"></div>
+                    <h1 class="text-5xl font-black tracking-tighter leading-none mb-2 relative z-10">
+                        <span class="text-primary drop-shadow-[0_0_15px_rgba(255,0,60,0.6)]">NECXY</span>
+                        <span class="text-white">STORE</span>
+                    </h1>
+                </div>
+                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-[4px] animate-slide-down">PREMIUM ACCESS TERMINAL</p>
+                <p class="text-[9px] text-gray-600 font-bold mt-2 animate-fade-in delay-200">ELITE CREDIT MARKETPLACE v3.0</p>
+            </div>
+            <div class="glass-panel p-8 rounded-[35px] shadow-2xl relative overflow-hidden animate-pop-up">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-[50px] animate-float"></div>
+                <div class="flex bg-black/50 p-1 rounded-xl mb-6 border border-white/5">
+                    <button onclick="toggleAuth('login')" id="tab-login" class="flex-1 py-3 rounded-lg text-xs font-black uppercase transition-all bg-gradient-to-r from-primary/20 to-primary/10 text-white shadow">Login</button>
+                    <button onclick="toggleAuth('signup')" id="tab-signup" class="flex-1 py-3 rounded-lg text-xs font-black uppercase transition-all text-gray-500 hover:text-white hover:bg-white/5">Sign Up</button>
+                </div>
+                <div id="form-container">
+                    <div id="input-name-group" class="mb-4 hidden animate-fade-in">
+                        <label class="text-[9px] font-bold text-gray-500 uppercase ml-2 mb-1 block">Username</label>
+                        <div class="bg-black/30 border border-white/10 rounded-xl px-4 py-3 flex items-center gap-3 focus-within:border-primary transition-colors">
+                            <i class="fa-solid fa-user text-gray-500 text-sm"></i>
+                            <input type="text" id="auth-name" placeholder="Enter username" class="bg-transparent w-full text-sm font-bold text-white outline-none">
+                        </div>
+                    </div>
+                    <div class="mb-4 animate-slide-in-right">
+                        <label class="text-[9px] font-bold text-gray-500 uppercase ml-2 mb-1 block">Email</label>
+                        <div class="bg-black/30 border border-white/10 rounded-xl px-4 py-3 flex items-center gap-3 focus-within:border-primary transition-colors">
+                            <i class="fa-solid fa-envelope text-gray-500 text-sm"></i>
+                            <input type="email" id="auth-email" placeholder="Email address" class="bg-transparent w-full text-sm font-bold text-white outline-none">
+                        </div>
+                    </div>
+                    <div class="mb-8 animate-slide-in-left">
+                        <label class="text-[9px] font-bold text-gray-500 uppercase ml-2 mb-1 block">Password</label>
+                        <div class="bg-black/30 border border-white/10 rounded-xl px-4 py-3 flex items-center gap-3 focus-within:border-primary transition-colors">
+                            <i class="fa-solid fa-lock text-gray-500 text-sm"></i>
+                            <input type="password" id="auth-pass" placeholder="••••••••" class="bg-transparent w-full text-sm font-bold text-white outline-none">
+                        </div>
+                    </div>
+                    <button id="btn-auth-action" onclick="handleAuth()" class="w-full btn-primary text-white py-4 rounded-xl font-black uppercase text-xs tracking-[3px] active:scale-95 transition-all hover:scale-[1.02]">Enter Store</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="main-app" class="app-layout">
+        <!-- Premium Header -->
+        <header class="fixed top-0 left-0 right-0 h-[80px] z-[50] flex justify-between items-center px-6 premium-header">
+            <div class="flex flex-col justify-center">
+                <h1 class="text-2xl font-black tracking-tighter leading-none">
+                    <span class="text-primary drop-shadow-[0_0_10px_rgba(255,0,60,0.5)]">NECXY</span>
+                    <span class="text-white">STORE</span>
+                </h1>
+                <p class="text-[9px] font-bold text-gray-500 uppercase tracking-[3px] leading-none mt-1.5 pl-0.5">ELITE CREDIT MARKETPLACE</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="text-right">
+                    <p class="text-[8px] font-bold text-gray-500 uppercase tracking-widest mb-0.5">Available Funds</p>
+                    <p class="text-sm font-black text-white tracking-wide leading-none">₹<span id="header-balance">0</span></p>
+                </div>
+                <button onclick="openDepositModal()" class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-[#cc0030] text-white border border-white/10 flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-[0_0_15px_rgba(255,0,60,0.3)] animate-glow">
+                    <i class="fa-solid fa-plus text-xs"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Home Page -->
+        <section id="page-home" class="px-4 pt-4 animate-fade-in block">
+            <div class="flex gap-3 overflow-x-auto no-scrollbar mb-8 pb-1 px-1">
+                <button onclick="filterHome('all', this)" class="category-btn tab-active px-6 py-2.5 rounded-xl text-[11px] font-black uppercase whitespace-nowrap transition-all shadow-lg">All</button>
+                <button onclick="filterHome('indo', this)" class="category-btn tab-inactive px-6 py-2.5 rounded-xl text-[11px] font-black uppercase whitespace-nowrap transition-all">Indo</button>
+                <button onclick="filterHome('paynow', this)" class="category-btn tab-inactive px-6 py-2.5 rounded-xl text-[11px] font-black uppercase whitespace-nowrap transition-all">Pay Now</button>
+                <button onclick="filterHome('bin', this)" class="category-btn tab-inactive px-6 py-2.5 rounded-xl text-[11px] font-black uppercase whitespace-nowrap transition-all">Bins</button>
+                <button onclick="filterHome('cc', this)" class="category-btn tab-inactive px-6 py-2.5 rounded-xl text-[11px] font-black uppercase whitespace-nowrap transition-all">CC's</button>
+                <button onclick="filterHome('method', this)" class="category-btn tab-inactive px-6 py-2.5 rounded-xl text-[11px] font-black uppercase whitespace-nowrap transition-all">Method</button>
+            </div>
+            <div id="product-grid" class="grid grid-cols-1 gap-4 pb-20">
+                <!-- Loading Skeleton -->
+                <div class="space-y-4">
+                    <div class="skeleton h-20 rounded-2xl"></div>
+                    <div class="skeleton h-20 rounded-2xl"></div>
+                    <div class="skeleton h-20 rounded-2xl"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Wallet Page -->
+        <section id="page-wallet" class="px-5 pt-4 animate-fade-in hidden">
+            <h2 class="text-xl font-black uppercase text-center mb-6 text-white tracking-[4px] gradient-text">Finance Hub</h2>
+            
+            <div class="wallet-card rounded-[35px] p-6 mb-8 shadow-2xl relative animate-fade-in">
+                <div class="flex justify-between items-start mb-10 relative z-10">
+                    <div>
+                        <p class="text-[10px] font-bold text-white/40 uppercase tracking-[3px] mb-1">Current Balance</p>
+                        <h1 class="text-5xl font-black text-white tracking-tighter animate-pulse-slow">₹<span id="display-balance">0</span></h1>
+                    </div>
+                    <div class="wallet-chip"></div>
+                </div>
+                
+                <div class="flex justify-between items-end relative z-10">
+                    <div>
+                        <p id="p-wallet-name" class="text-xs font-bold text-white/80 uppercase tracking-widest">---</p>
+                        <p class="text-[9px] font-mono text-white/30 mt-1">VALID THROUGH 12/29</p>
+                    </div>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" class="h-8 opacity-50 grayscale hover:grayscale-0 transition-all">
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-3 gap-3 mb-8">
+                <button onclick="openDepositModal()" class="glass-panel py-4 rounded-2xl flex flex-col items-center gap-2 active:scale-90 transition-all hover:scale-95">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-green-500/10 flex items-center justify-center text-green-500 border border-green-500/20">
+                        <i class="fa-solid fa-arrow-down-long"></i>
+                    </div>
+                    <span class="text-[9px] font-black uppercase text-gray-400">Add Funds</span>
+                </button>
+                <button onclick="openHistoryModal('deposit')" class="glass-panel py-4 rounded-2xl flex flex-col items-center gap-2 active:scale-90 transition-all hover:scale-95">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-500/20 to-yellow-500/10 flex items-center justify-center text-yellow-500 border border-yellow-500/20">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
+                    <span class="text-[9px] font-black uppercase text-gray-400">History</span>
+                </button>
+                <button onclick="openSupportModal()" class="glass-panel py-4 rounded-2xl flex flex-col items-center gap-2 active:scale-90 transition-all hover:scale-95">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/20">
+                        <i class="fa-solid fa-headset"></i>
+                    </div>
+                    <span class="text-[9px] font-black uppercase text-gray-400">Support</span>
+                </button>
+            </div>
+
+            <!-- Security Info -->
+            <div class="glass-panel rounded-2xl p-4 flex items-center gap-4 border border-primary/20">
+                <i class="fa-solid fa-shield-halved text-primary text-xl animate-pulse-slow"></i>
+                <p class="text-[10px] font-bold text-gray-400 leading-tight uppercase">All transactions are encrypted and processed through secure gateway protocols.</p>
+            </div>
+        </section>
+
+        <!-- Profile Page -->
+        <section id="page-profile" class="px-5 pt-4 animate-fade-in hidden">
+            <!-- Premium Profile Card -->
+            <div class="w-full aspect-[1.586/1] bg-gradient-to-br from-[#FF003C] to-[#080808] rounded-2xl p-6 relative overflow-hidden shadow-2xl border border-primary/20 mb-8">
+                <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-30"></div>
+                <div class="relative z-10 flex flex-col justify-between h-full">
+                    <div class="flex justify-between items-start">
+                        <i class="fa-solid fa-microchip text-4xl text-yellow-500/90 drop-shadow-md"></i>
+                        <i class="fa-solid fa-wifi text-white/50 text-2xl rotate-90"></i>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-[9px] text-white/50 font-mono uppercase tracking-widest mb-1">User ID</p>
+                        <div class="flex items-center gap-3">
+                            <span class="text-lg font-mono text-white/80 tracking-widest">••••</span>
+                            <span id="p-uid" class="text-xl font-mono text-white tracking-[3px] drop-shadow-sm">...</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <p class="text-[8px] text-white/50 font-bold uppercase tracking-widest mb-1">Holder Name</p>
+                            <h2 id="p-name" class="text-sm font-black text-white uppercase tracking-wider truncate max-w-[150px]">...</h2>
+                        </div>
+                        <div class="text-right">
+                            <h1 class="text-lg font-black italic text-white tracking-tighter opacity-80">NECXY</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Profile Actions -->
+            <div class="space-y-3 pb-24">
+                <button onclick="openHistoryModal('purchase')" class="w-full glass-panel p-5 rounded-2xl flex items-center justify-between active:scale-95 transition-all hover:scale-[1.02] border border-green-900/30 hover:border-green-500/30">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-green-500/10 flex items-center justify-center">
+                            <i class="fa-solid fa-bag-shopping text-green-500 text-lg"></i>
+                        </div>
+                        <span class="font-bold text-xs text-white uppercase tracking-wider">My Purchases</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-primary"></i>
+                </button>
+                
+                <button onclick="openRecModal()" class="w-full glass-panel p-5 rounded-2xl flex items-center justify-between active:scale-95 transition-all hover:scale-[1.02] border border-white/5 hover:border-primary/30">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-500/20 to-yellow-500/10 flex items-center justify-center">
+                            <i class="fa-solid fa-paper-plane text-yellow-500 text-lg"></i>
+                        </div>
+                        <span class="font-bold text-xs text-white uppercase tracking-wider">Request Product</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-primary"></i>
+                </button>
+                
+                <button onclick="openSupportModal()" class="w-full glass-panel p-5 rounded-2xl flex items-center justify-between active:scale-95 transition-all hover:scale-[1.02] border border-white/5 hover:border-blue-500/30">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-500/10 flex items-center justify-center">
+                            <i class="fa-brands fa-telegram text-blue-500 text-lg"></i>
+                        </div>
+                        <span class="font-bold text-xs text-white uppercase tracking-wider">Support</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-primary"></i>
+                </button>
+                
+                <button onclick="openLogoutConfirm()" class="w-full p-5 rounded-2xl bg-gradient-to-br from-red-500/10 to-red-500/5 text-red-500 font-black text-xs uppercase mt-6 tracking-widest hover:bg-red-500/20 transition-all border border-red-500/20 hover:border-red-500/40">
+                    <i class="fa-solid fa-power-off mr-2"></i>Log Out
+                </button>
+            </div>
+        </section>
+
+        <!-- Premium Bottom Navigation -->
+        <div class="fixed bottom-0 left-0 right-0 premium-nav h-[85px] rounded-t-[35px] flex justify-around items-center px-6 z-40">
+            <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center gap-1.5 nav-active transition-all w-1/3 group">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center group-hover:scale-110 transition-all">
+                    <i class="fa-solid fa-store text-xl group-hover:scale-110 transition-all"></i>
+                </div>
+                <span class="text-[9px] font-bold uppercase">Shop</span>
+            </button>
+            
+            <button onclick="switchTab('wallet')" id="nav-wallet" class="flex flex-col items-center gap-1.5 text-gray-600 transition-all w-1/3 group">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-500/10 to-gray-500/5 flex items-center justify-center group-hover:scale-110 transition-all">
+                    <i class="fa-solid fa-wallet text-xl group-hover:scale-110 transition-all"></i>
+                </div>
+                <span class="text-[9px] font-bold uppercase">Wallet</span>
+            </button>
+            
+            <button onclick="switchTab('profile')" id="nav-profile" class="flex flex-col items-center gap-1.5 text-gray-600 transition-all w-1/3 group">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-500/10 to-gray-500/5 flex items-center justify-center group-hover:scale-110 transition-all">
+                    <i class="fa-solid fa-user text-xl group-hover:scale-110 transition-all"></i>
+                </div>
+                <span class="text-[9px] font-bold uppercase">Profile</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Premium Modals -->
+
+    <!-- Product Modal -->
+    <div id="modal-product" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/95 backdrop-blur-xl transition-opacity" onclick="closeAllModals()"></div>
+        <div class="big-modal relative z-10 animate-pop-up">
+            <button onclick="closeAllModals()" class="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-black/50 flex items-center justify-center text-white hover:bg-black/70 transition-all"><i class="fa-solid fa-xmark"></i></button>
+            <div id="prod-icon-container" class="h-44 relative overflow-hidden bg-gradient-to-br from-black to-[#111] border-b border-white/5 flex items-center justify-center shrink-0"></div>
+            
+            <div class="p-8 overflow-y-auto">
+                <div id="buy-view">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex flex-col gap-1">
+                            <span id="prod-cat" class="text-[10px] font-black text-primary uppercase tracking-[3px] border border-primary/30 px-2 py-1 rounded inline-block w-max bg-primary/10">CATEGORY</span>
+                            <span id="prod-age-modal" class="hidden text-[9px] font-black text-yellow-500 uppercase bg-yellow-500/10 px-2 py-0.5 rounded w-max border border-yellow-500/20">1 DAY OLD</span>
+                        </div>
+                        <div class="text-right">
+                             <p class="text-[8px] font-bold text-gray-500 uppercase tracking-tighter">Uploaded On</p>
+                             <p id="prod-date-modal" class="text-[9px] font-bold text-yellow-400">--</p>
+                        </div>
+                    </div>
+                    <h2 id="prod-title" class="text-3xl font-black uppercase text-white leading-none mb-1 gradient-text">Product Name</h2>
+                    
+                    <div class="flex items-center gap-2 mb-6 text-yellow-500 text-xs"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><span class="text-gray-500 font-bold ml-2">(5.0 Verified)</span></div>
+                    <p id="prod-desc" class="text-sm text-gray-400 leading-relaxed mb-6 border-l-2 border-primary/30 pl-4 bg-gradient-to-r from-primary/5 to-transparent p-2 rounded-r-xl">Premium quality product directly from server. Instant delivery.</p>
+                    <div class="glass-panel p-5 rounded-2xl flex justify-between items-center border border-white/5">
+                        <div><p class="text-[10px] text-gray-500 font-bold uppercase mb-1">Price</p><div class="flex items-baseline gap-2"><span id="prod-price" class="text-3xl font-black text-green-500">₹0</span></div></div>
+                        <button onclick="openConfirmModal()" class="btn-primary text-white px-6 py-3 rounded-xl font-black uppercase text-xs tracking-widest active:scale-95 transition-all">Buy Now</button>
+                    </div>
+                </div>
+
+                <!-- Success View -->
+                <div id="success-view" class="hidden animate-fade-in">
+                    <div class="text-center relative">
+                        <div class="w-20 h-20 rounded-full bg-gradient-to-br from-green-500/20 to-green-500/10 text-green-500 flex items-center justify-center mx-auto mb-4 border border-green-500/30 success-glow relative overflow-hidden">
+                            <i class="fa-solid fa-check text-4xl relative z-10 animate-pop-up"></i>
+                            <div class="absolute inset-0 bg-green-500/20 animate-pulse"></div>
+                        </div>
+                        <h2 class="text-2xl font-black uppercase text-white tracking-tighter gradient-text">Purchase Successful</h2>
+                        <p class="text-[9px] text-gray-500 font-black uppercase tracking-[2px] mt-1">Transaction ID: <span class="text-green-500">#NCX-${Math.floor(Math.random()*9999)}</span></p>
+                    </div>
+
+                    <div class="mt-8 space-y-4">
+                        <div class="data-box rounded-2xl p-5 relative group">
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="text-[10px] font-black text-green-500 uppercase tracking-widest">Digital Product Access</span>
+                                <button onclick="copySuccessData()" class="text-white/50 hover:text-white transition-colors active:scale-90">
+                                    <i class="fa-regular fa-copy"></i>
+                                </button>
+                            </div>
+                            <textarea id="purchased-data" readonly class="w-full bg-transparent text-gray-300 font-mono text-sm outline-none resize-none h-32 no-scrollbar" onclick="this.select()"></textarea>
+                        </div>
+                        
+                        <div class="flex items-center justify-between px-2">
+                             <p class="text-[9px] text-gray-500 font-bold uppercase">Stored in: <span class="text-white">Profile > My Purchases</span></p>
+                             <div class="flex gap-1">
+                                 <div class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse-slow"></div>
+                                 <div class="w-1.5 h-1.5 rounded-full bg-green-500/40 animate-pulse-slow delay-150"></div>
+                                 <div class="w-1.5 h-1.5 rounded-full bg-green-500/20 animate-pulse-slow delay-300"></div>
+                             </div>
+                        </div>
+
+                        <button onclick="closeAllModals()" class="w-full glass-panel text-white py-4 rounded-xl font-black uppercase text-xs tracking-[4px] shadow-xl hover:scale-[1.02] active:scale-95 transition-all mt-4 border border-white/5">
+                            <i class="fa-solid fa-check mr-2"></i>Done
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Purchase Modal -->
+    <div id="modal-confirm-purchase" class="fixed inset-0 z-[110] hidden items-center justify-center p-6">
+        <div class="absolute inset-0 bg-black/95 backdrop-blur-xl"></div>
+        <div class="glass-panel w-full max-w-sm rounded-[35px] p-6 relative z-20 text-center animate-pop-up border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 text-primary flex items-center justify-center mx-auto mb-4 border border-primary/20">
+                <i class="fa-solid fa-cart-shopping text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-black uppercase text-white mb-1 tracking-tighter gradient-text">Confirm Purchase?</h3>
+            <p id="confirm-item-name" class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-4 truncate px-4">ITEM NAME</p>
+            
+            <div class="glass-panel rounded-2xl p-4 mb-6 border border-white/5">
+                <p class="text-[9px] text-gray-500 font-bold uppercase mb-1">Total Amount</p>
+                <p class="text-3xl font-black text-green-500">₹<span id="confirm-item-price">0</span></p>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="closeConfirmModal()" class="flex-1 py-4 rounded-2xl glass-panel text-[10px] font-black uppercase tracking-widest text-gray-400 hover:scale-[1.02] active:scale-95 transition-all">Cancel</button>
+                <button id="btn-final-confirm" onclick="window.processPurchase()" class="flex-1 py-4 rounded-2xl btn-primary text-white text-[10px] font-black uppercase tracking-widest active:scale-95 transition-all">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Purchase Detail Modal -->
+    <div id="modal-purchase-detail" class="fixed inset-0 z-[120] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/95 backdrop-blur-xl transition-opacity" onclick="closeModal('modal-purchase-detail')"></div>
+        <div class="big-modal relative z-10 animate-pop-up">
+            <button onclick="closeModal('modal-purchase-detail')" class="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-black/50 flex items-center justify-center text-white hover:bg-black/70 transition-all"><i class="fa-solid fa-xmark"></i></button>
+            <div class="h-32 bg-gradient-to-br from-green-900/20 to-green-900/10 flex items-center justify-center border-b border-green-500/20">
+                <i class="fa-solid fa-box-open text-5xl text-green-500"></i>
+            </div>
+            <div class="p-8">
+                <h2 id="detail-title" class="text-2xl font-black uppercase text-white leading-none mb-6 text-center gradient-text">Product</h2>
+                <div class="glass-panel rounded-xl p-5 mb-6 relative"><textarea id="detail-data" readonly class="w-full bg-transparent text-green-400 font-mono text-sm outline-none resize-none h-40"></textarea></div>
+                <button onclick="copyDetailData()" class="w-full btn-primary text-white py-4 rounded-xl font-black uppercase text-xs tracking-widest">
+                    <i class="fa-regular fa-copy mr-2"></i>Copy Data
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Support Modal -->
+    <div id="modal-support" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/95 backdrop-blur-xl" onclick="closeAllModals()"></div>
+        <div class="big-modal relative z-10 animate-pop-up">
+            <button onclick="closeAllModals()" class="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-black/50 flex items-center justify-center text-white hover:bg-black/70 transition-all"><i class="fa-solid fa-xmark"></i></button>
+            <div class="h-40 bg-gradient-to-br from-blue-900/20 to-blue-900/10 flex items-center justify-center border-b border-blue-500/20">
+                <i class="fa-solid fa-headset text-6xl text-blue-500"></i>
+            </div>
+            <div class="p-8 text-center">
+                <h2 class="text-2xl font-black uppercase text-white mb-2 gradient-text">Support</h2>
+                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-6">Get instant help from our team</p>
+                <div class="space-y-3 mt-8">
+                    <a href="https://t.me/i_necxy" id="link-chat" target="_blank" class="w-full glass-panel p-4 rounded-xl flex items-center justify-center gap-3 border border-blue-500/30 hover:border-blue-500/50 transition-all hover:scale-[1.02]">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-500/10 flex items-center justify-center">
+                            <i class="fa-brands fa-telegram text-blue-500 text-xl"></i>
+                        </div>
+                        <span class="font-bold text-sm text-white uppercase">Chat Admin</span>
+                    </a>
+                    <a href="https://t.me/+88Yn76RScSdiNjFl" id="link-channel" target="_blank" class="w-full glass-panel p-4 rounded-xl flex items-center justify-center gap-3 border border-primary/30 hover:border-primary/50 transition-all hover:scale-[1.02]">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+                            <i class="fa-solid fa-bullhorn text-primary text-xl"></i>
+                        </div>
+                        <span class="font-bold text-sm text-white uppercase">Join Channel</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Request Product Modal -->
+    <div id="modal-rec" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/95 backdrop-blur-xl" onclick="closeAllModals()"></div>
+        <div class="big-modal relative z-10 animate-pop-up">
+            <button onclick="closeAllModals()" class="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-black/50 flex items-center justify-center text-white hover:bg-black/70 transition-all"><i class="fa-solid fa-xmark"></i></button>
+            <div class="p-8 mt-10">
+                <h2 class="text-2xl font-black uppercase text-white mb-2 text-center gradient-text">Request Product</h2>
+                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-4 text-center">What would you like us to add?</p>
+                <textarea id="rec-text" class="w-full glass-panel border border-white/10 rounded-xl p-4 text-sm text-white mb-4 h-32 outline-none font-bold" placeholder="I need..."></textarea>
+                <button onclick="window.sendRec()" class="w-full btn-primary text-white font-black py-4 rounded-xl uppercase">
+                    <i class="fa-solid fa-paper-plane mr-2"></i>Send Request
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deposit Modal -->
+    <div id="modal-deposit" class="fixed inset-0 z-[100] hidden items-center justify-center p-6">
+        <div class="absolute inset-0 bg-black/95 backdrop-blur-xl" onclick="closeAllModals()"></div>
+        <div class="glass-panel w-full max-w-sm rounded-[35px] p-6 relative z-10 animate-pop-up">
+            <h3 class="text-xl font-black uppercase text-white mb-6 text-center gradient-text">Scan To Pay</h3>
+            <div class="bg-white p-4 rounded-2xl mb-4 text-center mx-auto w-max shadow-xl border-2 border-primary/20">
+                <img id="admin-qr" src="" class="w-40 h-40">
+            </div>
+            <div class="glass-panel p-3 rounded-xl flex justify-between items-center mb-4 cursor-pointer hover:scale-[1.02] transition-all" onclick="copyUPI()">
+                <div>
+                    <p class="text-[9px] text-gray-500 uppercase font-bold">Admin UPI ID</p>
+                    <p id="admin-upi" class="text-sm font-mono text-primary font-bold">LOADING...</p>
+                </div>
+                <i class="fa-regular fa-copy text-gray-400 hover:text-primary transition-colors"></i>
+            </div>
+            <div class="space-y-3">
+                <input type="number" id="dep-amt" placeholder="Amount (Min ₹30)" class="w-full glass-panel border border-white/10 p-4 rounded-xl outline-none font-bold text-white placeholder-gray-500">
+                <input type="text" id="dep-utr" placeholder="UTR / Ref ID" class="w-full glass-panel border border-white/10 p-4 rounded-xl outline-none font-bold text-white placeholder-gray-500">
+            </div>
+            <button onclick="window.submitDeposit()" class="w-full btn-primary text-white font-black py-4 rounded-xl uppercase tracking-widest text-sm mt-6">
+                <i class="fa-solid fa-paper-plane mr-2"></i>Submit Payment
+            </button>
+        </div>
+    </div>
+
+    <!-- Deposit Success Modal -->
+    <div id="modal-deposit-success" class="fixed inset-0 z-[100] hidden items-center justify-center p-6">
+        <div class="absolute inset-0 bg-black/95 backdrop-blur-xl" onclick="closeAllModals()"></div>
+        <div class="glass-panel w-full max-w-sm rounded-[35px] p-8 relative z-10 animate-pop-up text-center">
+            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-green-500/20 to-green-500/10 text-green-500 flex items-center justify-center mx-auto mb-4 border border-green-500/20">
+                <i class="fa-solid fa-clock text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-black uppercase text-white mb-2 gradient-text">Request Sent</h3>
+            <p class="text-xs text-gray-400 font-bold leading-relaxed mb-6">Payment verification is in progress.<br>Balance will be added within <span class="text-white">5 minutes</span>.</p>
+            <button onclick="closeAllModals()" class="w-full glass-panel text-white font-black py-3 rounded-xl uppercase text-xs hover:scale-[1.02] active:scale-95 transition border border-white/5">
+                <i class="fa-solid fa-check mr-2"></i>Okay
+            </button>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div id="modal-history" class="fixed inset-0 z-[100] hidden items-end justify-center">
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-sm" onclick="closeAllModals()"></div>
+        <div class="bg-gradient-to-t from-[#0a0a0a] to-[#050505] w-full max-w-md h-[80vh] rounded-t-[40px] p-6 relative z-10 animate-pop-up border-t border-primary/20 flex flex-col">
+            <div class="flex justify-between items-center mb-6 px-2">
+                <h3 id="hist-title" class="text-xl font-black uppercase text-white gradient-text">Activity</h3>
+                <button onclick="closeAllModals()" class="w-8 h-8 rounded-full bg-black/50 flex items-center justify-center hover:bg-black/70 transition-all">
+                    <i class="fa-solid fa-xmark text-lg text-gray-500 hover:text-white"></i>
+                </button>
+            </div>
+            <div id="hist-content" class="overflow-y-auto flex-1 pb-10 space-y-3 pr-2 no-scrollbar"></div>
+        </div>
+    </div>
+
+    <!-- Logout Modal -->
+    <div id="modal-logout" class="fixed inset-0 z-[110] hidden items-center justify-center p-6">
+        <div class="absolute inset-0 bg-black/95 backdrop-blur-xl"></div>
+        <div class="glass-panel w-full max-w-sm rounded-3xl p-6 relative z-20 text-center">
+            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-red-500/20 to-red-500/10 text-red-500 flex items-center justify-center mx-auto mb-4 border border-red-500/20">
+                <i class="fa-solid fa-power-off text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-black uppercase text-white mb-2 gradient-text">Log Out?</h3>
+            <p class="text-[10px] text-gray-500 font-bold uppercase mb-6">Are you sure you want to logout?</p>
+            <div class="flex gap-3">
+                <button onclick="closeAllModals()" class="flex-1 py-3 rounded-xl glass-panel text-xs font-bold uppercase tracking-widest text-gray-400 hover:scale-[1.02] transition-all">Cancel</button>
+                <button onclick="window.confirmLogout()" class="flex-1 py-3 rounded-xl bg-gradient-to-br from-red-500 to-red-600 text-black text-xs font-bold uppercase shadow-lg shadow-red-500/20 active:scale-95 transition-all">Yes</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue, push, set, update, get, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+  apiKey: "AIzaSyCJmwYY_s9dYFR5uCf4CHyaVG2ljwGAC2E",
+  authDomain: "minespro-4267c.firebaseapp.com",
+  projectId: "minespro-4267c",
+  storageBucket: "minespro-4267c.firebasestorage.app",
+  messagingSenderId: "747684645622",
+  appId: "1:747684645622:web:e9a0415c87a992f3d7bad7"
+};
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+
+        // Global state
+        let products = [];
+        let balance = 0;
+        let selectedProduct = null;
+        let purchaseHistory = [];
+        let depositHistory = [];
+        let UID = null;
+        let currentFilter = 'all';
+        let currentAuthMode = 'login';
+        let settings = {};
+
+        // Enhanced product age calculation
+        function getProductAge(addedOn) {
+            if (!addedOn) return null;
+            try {
+                const uploadDate = new Date(addedOn);
+                const now = new Date();
+                const diffTime = Math.abs(now - uploadDate);
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                if (diffDays >= 1) return `${diffDays} Day${diffDays > 1 ? 's' : ''} Old`;
+                return null;
+            } catch(e) {
+                return null;
+            }
+        }
+
+        // Enhanced dynamic price calculation with admin panel sync
+        function calculateDynamicPrice(p) {
+            if (!p || !p.price) return 0;
+            let basePrice = parseInt(p.price);
+            
+            // Apply Indo dynamic pricing if enabled in admin panel
+            if (p.type && p.type.toLowerCase().includes('indo')) {
+                const uploadDate = new Date(p.addedOn);
+                const now = new Date();
+                const diffTime = Math.abs(now - uploadDate);
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                // Add 1 rupee for every day old (as per admin panel)
+                if (diffDays >= 1) return basePrice + diffDays;
+            }
+            return basePrice;
+        }
+
+        // Enhanced date formatting
+        function getFormattedProductDate(rawDate) {
+            if (!rawDate || rawDate === '--') return "No Date";
+            try {
+                const date = new Date(rawDate);
+                if (isNaN(date.getTime())) return rawDate; 
+                const day = date.getDate();
+                const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                return `${day} ${months[date.getMonth()]} ${date.getFullYear()}`;
+            } catch(e) {
+                return rawDate;
+            }
+        }
+
+        // Auth state observer
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                UID = user.uid;
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('main-app').style.display = 'block';
+                
+                // Listen to user data
+                onValue(ref(db, `users/${UID}`), (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        // Check if user is banned (admin panel sync)
+                        if(data.isBanned) { 
+                            signOut(auth); 
+                            showToast("Access Denied: Account Suspended", 'error'); 
+                            return; 
+                        }
+                        
+                        balance = data.balance || 0;
+                        document.getElementById('display-balance').innerText = balance;
+                        document.getElementById('header-balance').innerText = balance;
+                        document.getElementById('p-name').innerText = data.name || "User";
+                        document.getElementById('p-wallet-name').innerText = data.name || "User";
+                        document.getElementById('p-uid').innerText = data.displayId || "000";
+                        
+                        if(data.purchaseHistory) {
+                            purchaseHistory = Object.values(data.purchaseHistory).reverse();
+                        } else {
+                            purchaseHistory = [];
+                        }
+                    }
+                });
+                
+                // Listen to deposit data (admin panel sync)
+                onValue(ref(db, `deposits`), (snapshot) => {
+                    const data = snapshot.val();
+                    if(data) {
+                        const allDeps = Object.values(data);
+                        depositHistory = allDeps.filter(d => d.uid == UID).reverse();
+                    } else { 
+                        depositHistory = []; 
+                    }
+                });
+            } else { 
+                document.getElementById('auth-screen').style.display = 'flex'; 
+                document.getElementById('main-app').style.display = 'none'; 
+            }
+        });
+
+        // Enhanced auth toggle
+        window.toggleAuth = function(mode) {
+            currentAuthMode = mode;
+            const btnLogin = document.getElementById('tab-login');
+            const btnSignup = document.getElementById('tab-signup');
+            const nameGroup = document.getElementById('input-name-group');
+            const actionBtn = document.getElementById('btn-auth-action');
+            
+            if(mode === 'signup') {
+                btnLogin.className = "flex-1 py-3 rounded-lg text-xs font-black uppercase transition-all text-gray-500 hover:text-white hover:bg-white/5";
+                btnSignup.className = "flex-1 py-3 rounded-lg text-xs font-black uppercase transition-all bg-gradient-to-r from-primary/20 to-primary/10 text-white shadow";
+                nameGroup.classList.remove('hidden');
+                actionBtn.innerText = "Create Account";
+            } else {
+                btnSignup.className = "flex-1 py-3 rounded-lg text-xs font-black uppercase transition-all text-gray-500 hover:text-white hover:bg-white/5";
+                btnLogin.className = "flex-1 py-3 rounded-lg text-xs font-black uppercase transition-all bg-gradient-to-r from-primary/20 to-primary/10 text-white shadow";
+                nameGroup.classList.add('hidden');
+                actionBtn.innerText = "Enter Store";
+            }
+        }
+
+        // Enhanced auth handler
+        window.handleAuth = function() {
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
+            const name = document.getElementById('auth-name').value;
+            const btn = document.getElementById('btn-auth-action');
+            
+            if(!email || !pass) { 
+                showToast('Fill all required fields', 'error'); 
+                return; 
+            }
+            
+            if(currentAuthMode === 'signup' && !name) {
+                showToast('Enter a username', 'error');
+                return;
+            }
+            
+            btn.innerHTML = '<span class="loader border-white border-b-transparent"></span>';
+            btn.disabled = true;
+            
+            if(currentAuthMode === 'signup') {
+                createUserWithEmailAndPassword(auth, email, pass).then((userCredential) => {
+                    set(ref(db, 'users/' + userCredential.user.uid), { 
+                        name: name, 
+                        email: email, 
+                        balance: 0, 
+                        displayId: Math.floor(100000 + Math.random() * 900000),
+                        createdAt: new Date().toISOString(),
+                        lastLogin: new Date().toISOString()
+                    });
+                    showToast('Account created successfully!', 'success');
+                }).catch((error) => { 
+                    btn.innerText = "Create Account"; 
+                    btn.disabled = false;
+                    showToast(error.message, 'error'); 
+                });
+            } else {
+                signInWithEmailAndPassword(auth, email, pass).then(() => {
+                    // Update last login time
+                    update(ref(db, `users/${UID}`), { 
+                        lastLogin: new Date().toISOString() 
+                    });
+                }).catch((error) => { 
+                    btn.innerText = "Enter Store"; 
+                    btn.disabled = false;
+                    showToast('Invalid credentials', 'error'); 
+                });
+            }
+        }
+
+        // Listen to products with admin panel sync
+        onValue(ref(db, 'products'), (snapshot) => {
+            const data = snapshot.val();
+            if (data) { 
+                products = Array.isArray(data) ? data.filter(x => x) : Object.values(data);
+                // Add IDs for reference
+                products.forEach((p, index) => {
+                    p.id = index.toString();
+                });
+                renderGrid(); 
+            }
+        });
+
+        // Listen to settings from admin panel
+        onValue(ref(db, 'settings'), (snapshot) => {
+            const data = snapshot.val();
+            if(data) {
+                settings = data;
+                
+                // Maintenance mode
+                if(data.isMaintenance) {
+                    document.getElementById('maintenance-screen').style.display = 'flex';
+                    document.getElementById('app-layout').style.display = 'none';
+                    if(data.telegramChannel) {
+                        document.getElementById('maint-link').href = data.telegramChannel;
+                    }
+                } else {
+                    document.getElementById('maintenance-screen').style.display = 'none';
+                }
+                
+                // Payment settings
+                if(data.upi) {
+                    document.getElementById('admin-upi').innerText = data.upi;
+                }
+                if(data.qrLink) {
+                    document.getElementById('admin-qr').src = data.qrLink;
+                }
+                
+                // Support links
+                if(data.telegramContact) {
+                    document.getElementById('link-chat').href = data.telegramContact;
+                }
+                if(data.telegramChannel) {
+                    document.getElementById('link-channel').href = data.telegramChannel;
+                }
+            }
+        });
+
+        // Enhanced product grid rendering
+        function renderGrid() {
+            const grid = document.getElementById('product-grid');
+            const filtered = products.filter(p => 
+                (currentFilter === 'all' || p.type.toLowerCase().includes(currentFilter)) && 
+                p.stock > 0
+            );
+            
+            if(filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-20 text-center">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center mx-auto mb-4 border border-primary/20">
+                            <i class="fa-solid fa-box-open text-2xl text-primary"></i>
+                        </div>
+                        <p class="text-gray-500 font-black uppercase tracking-[0.3em] text-sm mb-2">No Items Available</p>
+                        <p class="text-gray-600 text-[10px]">Try another category or check back later</p>
+                    </div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(p => {
+                const style = getProductIconClass(p.type);
+                const originalDateTime = getFormattedProductDate(p.addedOn);
+                const finalPrice = calculateDynamicPrice(p);
+                const ageText = (p.type && p.type.toLowerCase().includes('indo')) ? getProductAge(p.addedOn) : null;
+                
+                return `
+                <div class="product-card rounded-2xl p-4 flex items-center gap-4 group animate-fade-in" onclick="openProductModal('${p.id}')">
+                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-black/40 to-black/60 flex items-center justify-center border border-white/5 transition-transform group-active:scale-90">
+                        <i class="${style.icon} text-2xl ${style.color}"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 mb-0.5">
+                            <span class="text-[7px] font-black text-white/40 uppercase tracking-widest bg-white/5 px-1.5 py-0.5 rounded-md">${p.type}</span>
+                            ${ageText ? `<span class="text-[7px] font-black text-yellow-500 uppercase tracking-widest bg-yellow-500/10 px-1.5 py-0.5 rounded-md">${ageText}</span>` : ''}
+                            <span class="text-[7px] font-bold text-primary uppercase">Stock: ${p.stock}</span>
+                        </div>
+                        <h3 class="font-bold text-[13px] text-white leading-tight truncate">${p.title}</h3>
+                        <div class="flex flex-col">
+                            <p class="text-[12px] font-black text-green-500 mt-0.5">₹${finalPrice}</p>
+                            <p class="text-[8px] font-bold text-yellow-400 mt-1 uppercase tracking-tighter">${originalDateTime}</p>
+                        </div>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-white/5 to-white/2 text-white/20 flex items-center justify-center border border-white/5">
+                        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // Enhanced product icon styling
+        function getProductIconClass(type) {
+            const t = (type || "").toLowerCase();
+            if(t.includes('indo')) return { icon: 'fa-brands fa-instagram', color: 'insta-icon' };
+            if(t.includes('bin')) return { icon: 'fa-solid fa-credit-card', color: 'text-blue-500' };
+            if(t.includes('cc')) return { icon: 'fa-solid fa-lock', color: 'text-yellow-500' };
+            if(t.includes('pay')) return { icon: 'fa-solid fa-money-bill-wave', color: 'text-green-500' };
+            if(t.includes('method')) return { icon: 'fa-solid fa-fire', color: 'text-orange-500' };
+            return { icon: 'fa-solid fa-box', color: 'text-white' };
+        }
+
+        // Enhanced product modal
+        window.openProductModal = function(id) {
+            selectedProduct = products.find(p => p.id == id);
+            if(!selectedProduct) return;
+            
+            const finalPrice = calculateDynamicPrice(selectedProduct);
+            document.getElementById('buy-view').classList.remove('hidden');
+            document.getElementById('success-view').classList.add('hidden');
+            document.getElementById('prod-title').innerText = selectedProduct.title;
+            document.getElementById('prod-cat').innerText = selectedProduct.type;
+            document.getElementById('prod-price').innerText = '₹' + finalPrice;
+            document.getElementById('prod-date-modal').innerText = getFormattedProductDate(selectedProduct.addedOn);
+            
+            const ageText = (selectedProduct.type && selectedProduct.type.toLowerCase().includes('indo')) ? getProductAge(selectedProduct.addedOn) : null;
+            const ageEl = document.getElementById('prod-age-modal');
+            if(ageText) { 
+                ageEl.innerText = ageText; 
+                ageEl.classList.remove('hidden'); 
+            } else { 
+                ageEl.classList.add('hidden'); 
+            }
+            
+            const iconContainer = document.getElementById('prod-icon-container');
+            const style = getProductIconClass(selectedProduct.type);
+            iconContainer.innerHTML = `<i class="${style.icon} text-7xl ${style.color} relative z-10"></i>`;
+            
+            const m = document.getElementById('modal-product'); 
+            m.classList.remove('hidden'); 
+            m.classList.add('flex');
+        }
+
+        // Enhanced confirm purchase modal
+        window.openConfirmModal = function() {
+            if(!selectedProduct) return;
+            const finalPrice = calculateDynamicPrice(selectedProduct);
+            document.getElementById('confirm-item-name').innerText = selectedProduct.title;
+            document.getElementById('confirm-item-price').innerText = finalPrice;
+            const m = document.getElementById('modal-confirm-purchase');
+            m.classList.remove('hidden'); 
+            m.classList.add('flex');
+        }
+
+        window.closeConfirmModal = function() {
+            const m = document.getElementById('modal-confirm-purchase');
+            m.classList.add('hidden'); 
+            m.classList.remove('flex');
+        }
+
+        // Enhanced purchase processing
+        window.processPurchase = function() {
+            if(!selectedProduct) return;
+            
+            const finalPrice = calculateDynamicPrice(selectedProduct);
+            
+            // Check balance
+            if(balance < finalPrice) { 
+                showToast('Insufficient Balance. Add funds first!', 'error'); 
+                closeConfirmModal(); 
+                return; 
+            }
+            
+            // Check stock
+            if(selectedProduct.stock <= 0) {
+                showToast('Product out of stock!', 'error');
+                closeConfirmModal();
+                return;
+            }
+            
+            const btn = document.getElementById('btn-final-confirm');
+            btn.innerHTML = `<span class="loader border-white border-b-transparent"></span>`;
+            btn.disabled = true;
+            
+            // Transaction: Deduct balance and reduce stock
+            runTransaction(ref(db, `users/${UID}/balance`), (currentBal) => {
+                return (currentBal >= finalPrice) ? currentBal - finalPrice : undefined;
+            }).then((result) => {
+                if (result.committed) {
+                    // Update product stock
+                    update(ref(db, `products/${selectedProduct.id}`), { 
+                        stock: (selectedProduct.stock - 1) 
+                    });
+                    
+                    // Add to purchase history
+                    push(ref(db, `users/${UID}/purchaseHistory`), { 
+                        title: selectedProduct.title, 
+                        price: finalPrice, 
+                        date: new Date().toLocaleString(), 
+                        data: selectedProduct.data,
+                        type: selectedProduct.type
+                    });
+                    
+                    // Close confirm modal and show success
+                    closeConfirmModal();
+                    document.getElementById('buy-view').classList.add('hidden');
+                    document.getElementById('success-view').classList.remove('hidden');
+                    document.getElementById('purchased-data').value = selectedProduct.data;
+                    
+                    showToast('Purchase successful!', 'success');
+                } else { 
+                    showToast('Transaction failed. Try again!', 'error'); 
+                }
+                btn.innerText = "Confirm";
+                btn.disabled = false;
+            }).catch(error => {
+                showToast('Error processing transaction', 'error');
+                btn.innerText = "Confirm";
+                btn.disabled = false;
+            });
+        }
+
+        window.copySuccessData = function() {
+            const val = document.getElementById('purchased-data').value;
+            navigator.clipboard.writeText(val);
+            showToast('Copied to clipboard!', 'success');
+        }
+
+        // Enhanced deposit submission
+        window.submitDeposit = function() {
+            const amt = document.getElementById('dep-amt').value; 
+            const utr = document.getElementById('dep-utr').value;
+            
+            if(!amt || !utr) { 
+                showToast('Fill all fields', 'error'); 
+                return; 
+            }
+            
+            // Check minimum deposit
+            if(parseInt(amt) < 30) { 
+                showToast('Minimum deposit is ₹30', 'error'); 
+                return; 
+            }
+            
+            // Check maximum deposit
+            if(parseInt(amt) > 100000) {
+                showToast('Maximum deposit is ₹1,00,000', 'error');
+                return;
+            }
+            
+            // Submit deposit request
+            push(ref(db, 'deposits'), { 
+                uid: UID, 
+                id: 'UTR-'+utr.slice(-4), 
+                utr: utr, 
+                amount: parseInt(amt), 
+                date: new Date().toLocaleString(), 
+                status: 'Processing',
+                userEmail: auth.currentUser?.email || 'Unknown'
+            }).then(() => { 
+                closeAllModals(); 
+                document.getElementById('modal-deposit-success').classList.replace('hidden','flex'); 
+                showToast('Deposit request submitted!', 'success');
+            }).catch(error => {
+                showToast('Error submitting request', 'error');
+            });
+        }
+
+        // Enhanced history modal
+        window.openHistoryModal = function(type) {
+            const container = document.getElementById('hist-content');
+            const title = document.getElementById('hist-title');
+            container.innerHTML = '';
+            
+            if (type === 'purchase') {
+                title.innerText = "My Purchases";
+                if (purchaseHistory.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-10">
+                            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center mx-auto mb-4 border border-primary/20">
+                                <i class="fa-solid fa-box-open text-2xl text-primary"></i>
+                            </div>
+                            <p class="text-gray-500 font-black uppercase tracking-[0.3em] text-sm">No Orders Found</p>
+                            <p class="text-gray-600 text-[10px] mt-2">Make your first purchase!</p>
+                        </div>`;
+                } else {
+                    purchaseHistory.forEach((item, index) => {
+                        const div = document.createElement('div');
+                        div.className = "glass-panel p-4 rounded-2xl border border-white/5 flex justify-between items-center animate-fade-in";
+                        div.innerHTML = `
+                            <div class="flex-1 pr-4">
+                                <p class="text-[11px] font-black text-white uppercase mb-0.5 truncate">${item.title}</p>
+                                <div class="flex items-center gap-2">
+                                    <p class="text-[9px] text-gray-500 font-bold">${item.date}</p>
+                                    <span class="text-[7px] font-black text-primary uppercase bg-primary/10 px-1.5 py-0.5 rounded">${item.type || 'Other'}</span>
+                                </div>
+                                <p class="text-[10px] font-black text-green-500 mt-1">₹${item.price}</p>
+                            </div>
+                            <button onclick="viewPurchaseDetail(${index})" class="btn-primary text-[9px] font-black uppercase px-4 py-2 rounded-lg shrink-0">View</button>`;
+                        container.appendChild(div);
+                    });
+                }
+            } else if (type === 'deposit') {
+                title.innerText = "Deposit History";
+                if (depositHistory.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-10">
+                            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-green-500/10 to-green-500/5 flex items-center justify-center mx-auto mb-4 border border-green-500/20">
+                                <i class="fa-solid fa-money-bill-wave text-2xl text-green-500"></i>
+                            </div>
+                            <p class="text-gray-500 font-black uppercase tracking-[0.3em] text-sm">No Deposits Found</p>
+                            <p class="text-gray-600 text-[10px] mt-2">Make your first deposit!</p>
+                        </div>`;
+                } else {
+                    depositHistory.forEach(item => {
+                        const status = item.status || 'Processing';
+                        let statusColor = 'bg-gradient-to-br from-yellow-500/10 to-yellow-500/5 text-yellow-500 border-yellow-500/20';
+                        if (status === 'Completed' || status === 'Approved') { 
+                            statusColor = 'bg-gradient-to-br from-green-500/10 to-green-500/5 text-green-500 border-green-500/20'; 
+                        } else if (status === 'Rejected') { 
+                            statusColor = 'bg-gradient-to-br from-red-500/10 to-red-500/5 text-red-500 border-red-500/20'; 
+                        }
+                        
+                        const div = document.createElement('div');
+                        div.className = "glass-panel p-4 rounded-2xl border border-white/5 flex justify-between items-center animate-fade-in";
+                        div.innerHTML = `
+                            <div>
+                                <p class="text-[11px] font-black text-white uppercase mb-0.5">₹${item.amount} Deposit</p>
+                                <p class="text-[9px] text-gray-500 font-bold">${item.date} • ${item.id}</p>
+                            </div>
+                            <span class="${statusColor} text-[9px] font-black uppercase px-3 py-1 rounded-lg border">${status}</span>`;
+                        container.appendChild(div);
+                    });
+                }
+            }
+            
+            document.getElementById('modal-history').classList.replace('hidden', 'flex');
+        }
+
+        window.viewPurchaseDetail = function(index) {
+            const item = purchaseHistory[index];
+            if(!item) return;
+            document.getElementById('detail-title').innerText = item.title;
+            document.getElementById('detail-data').value = item.data;
+            closeAllModals();
+            document.getElementById('modal-purchase-detail').classList.replace('hidden', 'flex');
+        }
+
+        window.copyDetailData = function() {
+            const data = document.getElementById('detail-data');
+            data.select();
+            navigator.clipboard.writeText(data.value);
+            showToast('Copied to clipboard!', 'success');
+        }
+
+        window.filterHome = function(cat, btn) {
+            currentFilter = cat.toLowerCase();
+            document.querySelectorAll('.category-btn').forEach(b => { 
+                b.classList.remove('tab-active'); 
+                b.classList.add('tab-inactive'); 
+            });
+            btn.classList.add('tab-active'); 
+            btn.classList.remove('tab-inactive');
+            renderGrid();
+        }
+
+        // Enhanced toast function
+        window.showToast = function(message, type = 'info') { 
+            const toastArea = document.getElementById('toast-area');
+            const toast = document.createElement('div');
+            
+            let bgColor = 'bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20';
+            let textColor = 'text-white';
+            
+            if(type === 'error') {
+                bgColor = 'bg-gradient-to-br from-red-500/10 to-red-500/5 border-red-500/20';
+            } else if(type === 'success') {
+                bgColor = 'bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20';
+            }
+            
+            toast.className = `px-6 py-3 rounded-full backdrop-blur-xl border shadow-2xl animate-slide-down mx-auto w-max ${bgColor} ${textColor}`;
+            toast.innerHTML = `<span class="text-xs font-bold uppercase">${message}</span>`;
+            toastArea.appendChild(toast);
+            
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Enhanced modal management
+        window.closeAllModals = function() { 
+            document.querySelectorAll('[id^="modal-"]').forEach(e => {
+                e.classList.add('hidden'); 
+                e.classList.remove('flex');
+            });
+        }
+
+        window.closeModal = function(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+            document.getElementById(modalId).classList.remove('flex');
+        }
+
+        // Enhanced tab switching
+        window.switchTab = function(t) { 
+            document.querySelectorAll('section').forEach(e => e.classList.add('hidden')); 
+            document.getElementById(`page-${t}`).classList.remove('hidden');
+            document.querySelectorAll('[id^="nav-"]').forEach(n => { 
+                n.className = "flex flex-col items-center gap-1.5 text-gray-600 transition-all w-1/3 group";
+                n.querySelector('div').className = "w-10 h-10 rounded-full bg-gradient-to-br from-gray-500/10 to-gray-500/5 flex items-center justify-center group-hover:scale-110 transition-all";
+            });
+            
+            const activeNav = document.getElementById(`nav-${t}`);
+            activeNav.className = "flex flex-col items-center gap-1.5 nav-active transition-all w-1/3 group";
+            activeNav.querySelector('div').className = "w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center group-hover:scale-110 transition-all";
+        }
+
+        // Modal openers
+        window.openDepositModal = function() { 
+            document.getElementById('modal-deposit').classList.replace('hidden','flex'); 
+        }
+        window.openSupportModal = function() { 
+            document.getElementById('modal-support').classList.replace('hidden','flex'); 
+        }
+        window.openRecModal = function() { 
+            document.getElementById('modal-rec').classList.replace('hidden','flex'); 
+        }
+        window.openLogoutConfirm = function() { 
+            document.getElementById('modal-logout').classList.replace('hidden','flex'); 
+        }
+
+        window.confirmLogout = function() { 
+            signOut(auth).then(() => location.reload()); 
+        }
+
+        window.copyUPI = function() { 
+            navigator.clipboard.writeText(document.getElementById('admin-upi').innerText); 
+            showToast('UPI ID copied!', 'success'); 
+        }
+
+        // Enhanced request sending
+        window.sendRec = function() {
+            const txt = document.getElementById('rec-text').value;
+            if(!txt || txt.trim().length < 5) {
+                showToast('Please enter a detailed request', 'error');
+                return;
+            }
+            
+            push(ref(db, 'requests'), { 
+                uid: UID, 
+                text: txt.trim(), 
+                date: new Date().toLocaleString(),
+                userEmail: auth.currentUser?.email || 'Unknown',
+                userName: document.getElementById('p-name').innerText,
+                status: 'Pending'
+            }).then(() => {
+                showToast('Request sent to admin!', 'success'); 
+                closeAllModals();
+                document.getElementById('rec-text').value = '';
+            }).catch(error => {
+                showToast('Error sending request', 'error');
+            });
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add initial animation class
+            document.body.classList.add('animate-fade-in');
+            
+            // Check for maintenance mode on load
+            get(ref(db, 'settings')).then((snapshot) => {
+                const data = snapshot.val();
+                if(data && data.isMaintenance) {
+                    document.getElementById('maintenance-screen').style.display = 'flex';
+                    document.getElementById('auth-screen').style.display = 'none';
+                    
+                    if(data.telegramChannel) {
+                        document.getElementById('maint-link').href = data.telegramChannel;
+                    }
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
