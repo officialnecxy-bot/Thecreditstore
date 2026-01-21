@@ -315,7 +315,7 @@
             <div class="glass-panel p-8 rounded-[35px] shadow-2xl relative overflow-hidden animate-pop-up">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-[50px] animate-float"></div>
                 <div class="flex bg-black/50 p-1 rounded-xl mb-6 border border-white/5">
-                    <button onclick="toggleAuth('login')" id="tab-login" class="flex-1 py-3 rounded-lg text-xs font-black uppercase transition-all bg-gradient-to-r from-primary/20 to-primary/10 text-white shadow">Login</button>
+                    <button onclick="toggleAuth('login')" id="tab-login" class="flex-1 py-3 rounded-lg text-xs font-black uppercase transition-all tab-active">Login</button>
                     <button onclick="toggleAuth('signup')" id="tab-signup" class="flex-1 py-3 rounded-lg text-xs font-black uppercase transition-all text-gray-500 hover:text-white hover:bg-white/5">Sign Up</button>
                 </div>
                 <div id="form-container">
@@ -570,7 +570,7 @@
                             <div class="absolute inset-0 bg-green-500/20 animate-pulse"></div>
                         </div>
                         <h2 class="text-2xl font-black uppercase text-white tracking-tighter gradient-text">Purchase Successful</h2>
-                        <p class="text-[9px] text-gray-500 font-black uppercase tracking-[2px] mt-1">Transaction ID: <span class="text-green-500">#NCX-${Math.floor(Math.random()*9999)}</span></p>
+                        <p class="text-[9px] text-gray-500 font-black uppercase tracking-[2px] mt-1">Transaction ID: <span class="text-green-500" id="success-tx-id">#NCX-0000</span></p>
                     </div>
 
                     <div class="mt-8 space-y-4">
@@ -619,7 +619,7 @@
 
             <div class="flex gap-3">
                 <button onclick="closeConfirmModal()" class="flex-1 py-4 rounded-2xl glass-panel text-[10px] font-black uppercase tracking-widest text-gray-400 hover:scale-[1.02] active:scale-95 transition-all">Cancel</button>
-                <button id="btn-final-confirm" onclick="window.processPurchase()" class="flex-1 py-4 rounded-2xl btn-primary text-white text-[10px] font-black uppercase tracking-widest active:scale-95 transition-all">Confirm</button>
+                <button id="btn-final-confirm" onclick="processPurchase()" class="flex-1 py-4 rounded-2xl btn-primary text-white text-[10px] font-black uppercase tracking-widest active:scale-95 transition-all">Confirm</button>
             </div>
         </div>
     </div>
@@ -680,7 +680,7 @@
                 <h2 class="text-2xl font-black uppercase text-white mb-2 text-center gradient-text">Request Product</h2>
                 <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-4 text-center">What would you like us to add?</p>
                 <textarea id="rec-text" class="w-full glass-panel border border-white/10 rounded-xl p-4 text-sm text-white mb-4 h-32 outline-none font-bold" placeholder="I need..."></textarea>
-                <button onclick="window.sendRec()" class="w-full btn-primary text-white font-black py-4 rounded-xl uppercase">
+                <button onclick="sendRec()" class="w-full btn-primary text-white font-black py-4 rounded-xl uppercase">
                     <i class="fa-solid fa-paper-plane mr-2"></i>Send Request
                 </button>
             </div>
@@ -706,7 +706,7 @@
                 <input type="number" id="dep-amt" placeholder="Amount (Min ₹30)" class="w-full glass-panel border border-white/10 p-4 rounded-xl outline-none font-bold text-white placeholder-gray-500">
                 <input type="text" id="dep-utr" placeholder="UTR / Ref ID" class="w-full glass-panel border border-white/10 p-4 rounded-xl outline-none font-bold text-white placeholder-gray-500">
             </div>
-            <button onclick="window.submitDeposit()" class="w-full btn-primary text-white font-black py-4 rounded-xl uppercase tracking-widest text-sm mt-6">
+            <button onclick="submitDeposit()" class="w-full btn-primary text-white font-black py-4 rounded-xl uppercase tracking-widest text-sm mt-6">
                 <i class="fa-solid fa-paper-plane mr-2"></i>Submit Payment
             </button>
         </div>
@@ -752,7 +752,7 @@
             <p class="text-[10px] text-gray-500 font-bold uppercase mb-6">Are you sure you want to logout?</p>
             <div class="flex gap-3">
                 <button onclick="closeAllModals()" class="flex-1 py-3 rounded-xl glass-panel text-xs font-bold uppercase tracking-widest text-gray-400 hover:scale-[1.02] transition-all">Cancel</button>
-                <button onclick="window.confirmLogout()" class="flex-1 py-3 rounded-xl bg-gradient-to-br from-red-500 to-red-600 text-black text-xs font-bold uppercase shadow-lg shadow-red-500/20 active:scale-95 transition-all">Yes</button>
+                <button onclick="confirmLogout()" class="flex-1 py-3 rounded-xl bg-gradient-to-br from-red-500 to-red-600 text-black text-xs font-bold uppercase shadow-lg shadow-red-500/20 active:scale-95 transition-all">Yes</button>
             </div>
         </div>
     </div>
@@ -763,13 +763,13 @@
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
-  apiKey: "AIzaSyCJmwYY_s9dYFR5uCf4CHyaVG2ljwGAC2E",
-  authDomain: "minespro-4267c.firebaseapp.com",
-  projectId: "minespro-4267c",
-  storageBucket: "minespro-4267c.firebasestorage.app",
-  messagingSenderId: "747684645622",
-  appId: "1:747684645622:web:e9a0415c87a992f3d7bad7"
-};
+            apiKey: "AIzaSyCJmwYY_s9dYFR5uCf4CHyaVG2ljwGAC2E",
+            authDomain: "minespro-4267c.firebaseapp.com",
+            projectId: "minespro-4267c",
+            storageBucket: "minespro-4267c.firebasestorage.app",
+            messagingSenderId: "747684645622",
+            appId: "1:747684645622:web:e9a0415c87a992f3d7bad7"
+        };
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
@@ -785,6 +785,7 @@
         let currentFilter = 'all';
         let currentAuthMode = 'login';
         let settings = {};
+        let userData = {};
 
         // Enhanced product age calculation
         function getProductAge(addedOn) {
@@ -801,29 +802,30 @@
             }
         }
 
-        // Enhanced dynamic price calculation with admin panel sync
+        // Enhanced dynamic price calculation
         function calculateDynamicPrice(p) {
             if (!p || !p.price) return 0;
             let basePrice = parseInt(p.price);
             
-            // Apply Indo dynamic pricing if enabled in admin panel
+            // Apply Indo dynamic pricing
             if (p.type && p.type.toLowerCase().includes('indo')) {
-                const uploadDate = new Date(p.addedOn);
-                const now = new Date();
-                const diffTime = Math.abs(now - uploadDate);
-                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-                // Add 1 rupee for every day old (as per admin panel)
-                if (diffDays >= 1) return basePrice + diffDays;
+                const age = getProductAge(p.addedOn);
+                if (age) {
+                    const days = parseInt(age);
+                    if (!isNaN(days)) {
+                        return basePrice + days;
+                    }
+                }
             }
             return basePrice;
         }
 
         // Enhanced date formatting
         function getFormattedProductDate(rawDate) {
-            if (!rawDate || rawDate === '--') return "No Date";
+            if (!rawDate) return "No Date";
             try {
                 const date = new Date(rawDate);
-                if (isNaN(date.getTime())) return rawDate; 
+                if (isNaN(date.getTime())) return "Invalid Date";
                 const day = date.getDate();
                 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
                 return `${day} ${months[date.getMonth()]} ${date.getFullYear()}`;
@@ -843,7 +845,8 @@
                 onValue(ref(db, `users/${UID}`), (snapshot) => {
                     const data = snapshot.val();
                     if (data) {
-                        // Check if user is banned (admin panel sync)
+                        userData = data;
+                        // Check if user is banned
                         if(data.isBanned) { 
                             signOut(auth); 
                             showToast("Access Denied: Account Suspended", 'error'); 
@@ -865,7 +868,7 @@
                     }
                 });
                 
-                // Listen to deposit data (admin panel sync)
+                // Listen to deposit data
                 onValue(ref(db, `deposits`), (snapshot) => {
                     const data = snapshot.val();
                     if(data) {
@@ -890,23 +893,27 @@
             const actionBtn = document.getElementById('btn-auth-action');
             
             if(mode === 'signup') {
-                btnLogin.className = "flex-1 py-3 rounded-lg text-xs font-black uppercase transition-all text-gray-500 hover:text-white hover:bg-white/5";
-                btnSignup.className = "flex-1 py-3 rounded-lg text-xs font-black uppercase transition-all bg-gradient-to-r from-primary/20 to-primary/10 text-white shadow";
+                btnLogin.classList.remove('tab-active');
+                btnLogin.classList.add('text-gray-500', 'hover:text-white', 'hover:bg-white/5');
+                btnSignup.classList.remove('text-gray-500', 'hover:text-white', 'hover:bg-white/5');
+                btnSignup.classList.add('tab-active');
                 nameGroup.classList.remove('hidden');
                 actionBtn.innerText = "Create Account";
             } else {
-                btnSignup.className = "flex-1 py-3 rounded-lg text-xs font-black uppercase transition-all text-gray-500 hover:text-white hover:bg-white/5";
-                btnLogin.className = "flex-1 py-3 rounded-lg text-xs font-black uppercase transition-all bg-gradient-to-r from-primary/20 to-primary/10 text-white shadow";
+                btnSignup.classList.remove('tab-active');
+                btnSignup.classList.add('text-gray-500', 'hover:text-white', 'hover:bg-white/5');
+                btnLogin.classList.remove('text-gray-500', 'hover:text-white', 'hover:bg-white/5');
+                btnLogin.classList.add('tab-active');
                 nameGroup.classList.add('hidden');
                 actionBtn.innerText = "Enter Store";
             }
         }
 
         // Enhanced auth handler
-        window.handleAuth = function() {
-            const email = document.getElementById('auth-email').value;
+        window.handleAuth = async function() {
+            const email = document.getElementById('auth-email').value.trim();
             const pass = document.getElementById('auth-pass').value;
-            const name = document.getElementById('auth-name').value;
+            const name = document.getElementById('auth-name').value.trim();
             const btn = document.getElementById('btn-auth-action');
             
             if(!email || !pass) { 
@@ -919,12 +926,18 @@
                 return;
             }
             
+            if(pass.length < 6) {
+                showToast('Password must be at least 6 characters', 'error');
+                return;
+            }
+            
             btn.innerHTML = '<span class="loader border-white border-b-transparent"></span>';
             btn.disabled = true;
             
-            if(currentAuthMode === 'signup') {
-                createUserWithEmailAndPassword(auth, email, pass).then((userCredential) => {
-                    set(ref(db, 'users/' + userCredential.user.uid), { 
+            try {
+                if(currentAuthMode === 'signup') {
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+                    await set(ref(db, 'users/' + userCredential.user.uid), { 
                         name: name, 
                         email: email, 
                         balance: 0, 
@@ -933,39 +946,38 @@
                         lastLogin: new Date().toISOString()
                     });
                     showToast('Account created successfully!', 'success');
-                }).catch((error) => { 
-                    btn.innerText = "Create Account"; 
-                    btn.disabled = false;
-                    showToast(error.message, 'error'); 
-                });
-            } else {
-                signInWithEmailAndPassword(auth, email, pass).then(() => {
+                } else {
+                    await signInWithEmailAndPassword(auth, email, pass);
                     // Update last login time
-                    update(ref(db, `users/${UID}`), { 
-                        lastLogin: new Date().toISOString() 
-                    });
-                }).catch((error) => { 
-                    btn.innerText = "Enter Store"; 
-                    btn.disabled = false;
-                    showToast('Invalid credentials', 'error'); 
-                });
+                    if (UID) {
+                        await update(ref(db, `users/${UID}`), { 
+                            lastLogin: new Date().toISOString() 
+                        });
+                    }
+                }
+            } catch(error) { 
+                btn.innerText = currentAuthMode === 'signup' ? "Create Account" : "Enter Store"; 
+                btn.disabled = false;
+                showToast(error.message, 'error'); 
             }
         }
 
-        // Listen to products with admin panel sync
+        // Listen to products
         onValue(ref(db, 'products'), (snapshot) => {
             const data = snapshot.val();
             if (data) { 
-                products = Array.isArray(data) ? data.filter(x => x) : Object.values(data);
-                // Add IDs for reference
-                products.forEach((p, index) => {
-                    p.id = index.toString();
-                });
+                products = Object.keys(data).map(key => ({
+                    id: key,
+                    ...data[key]
+                }));
                 renderGrid(); 
+            } else {
+                products = [];
+                renderGrid();
             }
         });
 
-        // Listen to settings from admin panel
+        // Listen to settings
         onValue(ref(db, 'settings'), (snapshot) => {
             const data = snapshot.val();
             if(data) {
@@ -1003,12 +1015,8 @@
         // Enhanced product grid rendering
         function renderGrid() {
             const grid = document.getElementById('product-grid');
-            const filtered = products.filter(p => 
-                (currentFilter === 'all' || p.type.toLowerCase().includes(currentFilter)) && 
-                p.stock > 0
-            );
             
-            if(filtered.length === 0) {
+            if(products.length === 0) {
                 grid.innerHTML = `
                     <div class="col-span-full py-20 text-center">
                         <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center mx-auto mb-4 border border-primary/20">
@@ -1020,11 +1028,46 @@
                 return;
             }
 
+            let filtered = products;
+            
+            if (currentFilter !== 'all') {
+                filtered = products.filter(p => {
+                    const productType = (p.type || '').toLowerCase();
+                    const filter = currentFilter.toLowerCase();
+                    
+                    // Special handling for different categories
+                    if (filter === 'indo') return productType.includes('indo');
+                    if (filter === 'cc') return productType.includes('cc') || productType.includes('credit');
+                    if (filter === 'bin') return productType.includes('bin');
+                    if (filter === 'paynow') return productType.includes('pay');
+                    if (filter === 'method') return productType.includes('method') || productType.includes('tut');
+                    
+                    return productType.includes(filter);
+                });
+            }
+            
+            // Filter out out-of-stock products
+            filtered = filtered.filter(p => p.stock > 0);
+            
+            if(filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-20 text-center">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center mx-auto mb-4 border border-primary/20">
+                            <i class="fa-solid fa-filter text-2xl text-primary"></i>
+                        </div>
+                        <p class="text-gray-500 font-black uppercase tracking-[0.3em] text-sm mb-2">No ${currentFilter === 'all' ? '' : currentFilter} Items</p>
+                        <p class="text-gray-600 text-[10px]">Try another category or check back later</p>
+                    </div>`;
+                return;
+            }
+
             grid.innerHTML = filtered.map(p => {
                 const style = getProductIconClass(p.type);
                 const originalDateTime = getFormattedProductDate(p.addedOn);
                 const finalPrice = calculateDynamicPrice(p);
                 const ageText = (p.type && p.type.toLowerCase().includes('indo')) ? getProductAge(p.addedOn) : null;
+                const stock = parseInt(p.stock) || 0;
+                const stockColor = stock > 10 ? 'text-green-500' : stock > 3 ? 'text-yellow-500' : 'text-red-500';
                 
                 return `
                 <div class="product-card rounded-2xl p-4 flex items-center gap-4 group animate-fade-in" onclick="openProductModal('${p.id}')">
@@ -1033,17 +1076,17 @@
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center gap-2 mb-0.5">
-                            <span class="text-[7px] font-black text-white/40 uppercase tracking-widest bg-white/5 px-1.5 py-0.5 rounded-md">${p.type}</span>
+                            <span class="text-[7px] font-black text-white/40 uppercase tracking-widest bg-white/5 px-1.5 py-0.5 rounded-md">${p.type || 'Other'}</span>
                             ${ageText ? `<span class="text-[7px] font-black text-yellow-500 uppercase tracking-widest bg-yellow-500/10 px-1.5 py-0.5 rounded-md">${ageText}</span>` : ''}
-                            <span class="text-[7px] font-bold text-primary uppercase">Stock: ${p.stock}</span>
+                            <span class="text-[7px] font-bold ${stockColor} uppercase">Stock: ${stock}</span>
                         </div>
-                        <h3 class="font-bold text-[13px] text-white leading-tight truncate">${p.title}</h3>
+                        <h3 class="font-bold text-[13px] text-white leading-tight truncate">${p.title || 'Untitled Product'}</h3>
                         <div class="flex flex-col">
                             <p class="text-[12px] font-black text-green-500 mt-0.5">₹${finalPrice}</p>
                             <p class="text-[8px] font-bold text-yellow-400 mt-1 uppercase tracking-tighter">${originalDateTime}</p>
                         </div>
                     </div>
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-white/5 to-white/2 text-white/20 flex items-center justify-center border border-white/5">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-white/5 to-white/2 text-white/20 flex items-center justify-center border border-white/5 group-hover:bg-primary/20 group-hover:text-primary transition-all">
                         <i class="fa-solid fa-chevron-right text-[10px]"></i>
                     </div>
                 </div>`;
@@ -1057,20 +1100,23 @@
             if(t.includes('bin')) return { icon: 'fa-solid fa-credit-card', color: 'text-blue-500' };
             if(t.includes('cc')) return { icon: 'fa-solid fa-lock', color: 'text-yellow-500' };
             if(t.includes('pay')) return { icon: 'fa-solid fa-money-bill-wave', color: 'text-green-500' };
-            if(t.includes('method')) return { icon: 'fa-solid fa-fire', color: 'text-orange-500' };
+            if(t.includes('method') || t.includes('tut')) return { icon: 'fa-solid fa-fire', color: 'text-orange-500' };
             return { icon: 'fa-solid fa-box', color: 'text-white' };
         }
 
         // Enhanced product modal
         window.openProductModal = function(id) {
             selectedProduct = products.find(p => p.id == id);
-            if(!selectedProduct) return;
+            if(!selectedProduct) {
+                showToast('Product not found', 'error');
+                return;
+            }
             
             const finalPrice = calculateDynamicPrice(selectedProduct);
             document.getElementById('buy-view').classList.remove('hidden');
             document.getElementById('success-view').classList.add('hidden');
-            document.getElementById('prod-title').innerText = selectedProduct.title;
-            document.getElementById('prod-cat').innerText = selectedProduct.type;
+            document.getElementById('prod-title').innerText = selectedProduct.title || 'Untitled Product';
+            document.getElementById('prod-cat').innerText = selectedProduct.type || 'Other';
             document.getElementById('prod-price').innerText = '₹' + finalPrice;
             document.getElementById('prod-date-modal').innerText = getFormattedProductDate(selectedProduct.addedOn);
             
@@ -1094,9 +1140,19 @@
 
         // Enhanced confirm purchase modal
         window.openConfirmModal = function() {
-            if(!selectedProduct) return;
+            if(!selectedProduct) {
+                showToast('No product selected', 'error');
+                return;
+            }
+            
+            const stock = parseInt(selectedProduct.stock) || 0;
+            if(stock <= 0) {
+                showToast('Product out of stock!', 'error');
+                return;
+            }
+            
             const finalPrice = calculateDynamicPrice(selectedProduct);
-            document.getElementById('confirm-item-name').innerText = selectedProduct.title;
+            document.getElementById('confirm-item-name').innerText = selectedProduct.title || 'Product';
             document.getElementById('confirm-item-price').innerText = finalPrice;
             const m = document.getElementById('modal-confirm-purchase');
             m.classList.remove('hidden'); 
@@ -1110,10 +1166,14 @@
         }
 
         // Enhanced purchase processing
-        window.processPurchase = function() {
-            if(!selectedProduct) return;
+        window.processPurchase = async function() {
+            if(!selectedProduct || !UID) {
+                showToast('Invalid request', 'error');
+                return;
+            }
             
             const finalPrice = calculateDynamicPrice(selectedProduct);
+            const stock = parseInt(selectedProduct.stock) || 0;
             
             // Check balance
             if(balance < finalPrice) { 
@@ -1123,52 +1183,67 @@
             }
             
             // Check stock
-            if(selectedProduct.stock <= 0) {
+            if(stock <= 0) {
                 showToast('Product out of stock!', 'error');
                 closeConfirmModal();
                 return;
             }
             
             const btn = document.getElementById('btn-final-confirm');
+            const originalText = btn.innerHTML;
             btn.innerHTML = `<span class="loader border-white border-b-transparent"></span>`;
             btn.disabled = true;
             
-            // Transaction: Deduct balance and reduce stock
-            runTransaction(ref(db, `users/${UID}/balance`), (currentBal) => {
-                return (currentBal >= finalPrice) ? currentBal - finalPrice : undefined;
-            }).then((result) => {
-                if (result.committed) {
-                    // Update product stock
-                    update(ref(db, `products/${selectedProduct.id}`), { 
-                        stock: (selectedProduct.stock - 1) 
-                    });
-                    
-                    // Add to purchase history
-                    push(ref(db, `users/${UID}/purchaseHistory`), { 
-                        title: selectedProduct.title, 
-                        price: finalPrice, 
-                        date: new Date().toLocaleString(), 
-                        data: selectedProduct.data,
-                        type: selectedProduct.type
-                    });
-                    
-                    // Close confirm modal and show success
-                    closeConfirmModal();
-                    document.getElementById('buy-view').classList.add('hidden');
-                    document.getElementById('success-view').classList.remove('hidden');
-                    document.getElementById('purchased-data').value = selectedProduct.data;
-                    
-                    showToast('Purchase successful!', 'success');
-                } else { 
-                    showToast('Transaction failed. Try again!', 'error'); 
-                }
-                btn.innerText = "Confirm";
+            try {
+                // Transaction: Deduct balance and reduce stock
+                const updates = {};
+                updates[`users/${UID}/balance`] = balance - finalPrice;
+                updates[`products/${selectedProduct.id}/stock`] = stock - 1;
+                
+                // Add to purchase history
+                const purchaseRef = push(ref(db, `users/${UID}/purchaseHistory`));
+                const purchaseData = { 
+                    title: selectedProduct.title, 
+                    price: finalPrice, 
+                    date: new Date().toISOString(), 
+                    data: selectedProduct.data || '',
+                    type: selectedProduct.type,
+                    productId: selectedProduct.id,
+                    transactionId: 'NCX-' + Date.now()
+                };
+                
+                updates[`users/${UID}/purchaseHistory/${purchaseRef.key}`] = purchaseData;
+                
+                // Update all at once
+                await update(ref(db), updates);
+                
+                // Update local state
+                balance = balance - finalPrice;
+                document.getElementById('display-balance').innerText = balance;
+                document.getElementById('header-balance').innerText = balance;
+                
+                // Update product stock locally
+                selectedProduct.stock = stock - 1;
+                
+                // Close confirm modal and show success
+                closeConfirmModal();
+                document.getElementById('buy-view').classList.add('hidden');
+                document.getElementById('success-view').classList.remove('hidden');
+                document.getElementById('purchased-data').value = selectedProduct.data || 'No data available';
+                document.getElementById('success-tx-id').innerText = purchaseData.transactionId;
+                
+                showToast('Purchase successful!', 'success');
+                
+                // Re-render grid to update stock
+                renderGrid();
+                
+            } catch(error) {
+                console.error('Purchase error:', error);
+                showToast('Error processing purchase: ' + error.message, 'error');
+            } finally {
+                btn.innerHTML = originalText;
                 btn.disabled = false;
-            }).catch(error => {
-                showToast('Error processing transaction', 'error');
-                btn.innerText = "Confirm";
-                btn.disabled = false;
-            });
+            }
         }
 
         window.copySuccessData = function() {
@@ -1178,43 +1253,50 @@
         }
 
         // Enhanced deposit submission
-        window.submitDeposit = function() {
+        window.submitDeposit = async function() {
             const amt = document.getElementById('dep-amt').value; 
-            const utr = document.getElementById('dep-utr').value;
+            const utr = document.getElementById('dep-utr').value.trim();
             
             if(!amt || !utr) { 
                 showToast('Fill all fields', 'error'); 
                 return; 
             }
             
-            // Check minimum deposit
-            if(parseInt(amt) < 30) { 
+            const amount = parseInt(amt);
+            if(isNaN(amount) || amount < 30) { 
                 showToast('Minimum deposit is ₹30', 'error'); 
                 return; 
             }
             
-            // Check maximum deposit
-            if(parseInt(amt) > 100000) {
+            if(amount > 100000) {
                 showToast('Maximum deposit is ₹1,00,000', 'error');
                 return;
             }
             
-            // Submit deposit request
-            push(ref(db, 'deposits'), { 
-                uid: UID, 
-                id: 'UTR-'+utr.slice(-4), 
-                utr: utr, 
-                amount: parseInt(amt), 
-                date: new Date().toLocaleString(), 
-                status: 'Processing',
-                userEmail: auth.currentUser?.email || 'Unknown'
-            }).then(() => { 
+            try {
+                // Submit deposit request
+                await push(ref(db, 'deposits'), { 
+                    uid: UID, 
+                    utr: utr, 
+                    amount: amount, 
+                    date: new Date().toISOString(), 
+                    status: 'Pending',
+                    userEmail: auth.currentUser?.email || 'Unknown',
+                    userName: userData.name || 'User'
+                });
+                
                 closeAllModals(); 
                 document.getElementById('modal-deposit-success').classList.replace('hidden','flex'); 
                 showToast('Deposit request submitted!', 'success');
-            }).catch(error => {
-                showToast('Error submitting request', 'error');
-            });
+                
+                // Clear form
+                document.getElementById('dep-amt').value = '';
+                document.getElementById('dep-utr').value = '';
+                
+            } catch(error) {
+                console.error('Deposit error:', error);
+                showToast('Error submitting request: ' + error.message, 'error');
+            }
         }
 
         // Enhanced history modal
@@ -1240,12 +1322,12 @@
                         div.className = "glass-panel p-4 rounded-2xl border border-white/5 flex justify-between items-center animate-fade-in";
                         div.innerHTML = `
                             <div class="flex-1 pr-4">
-                                <p class="text-[11px] font-black text-white uppercase mb-0.5 truncate">${item.title}</p>
+                                <p class="text-[11px] font-black text-white uppercase mb-0.5 truncate">${item.title || 'Purchase'}</p>
                                 <div class="flex items-center gap-2">
-                                    <p class="text-[9px] text-gray-500 font-bold">${item.date}</p>
+                                    <p class="text-[9px] text-gray-500 font-bold">${new Date(item.date).toLocaleDateString()}</p>
                                     <span class="text-[7px] font-black text-primary uppercase bg-primary/10 px-1.5 py-0.5 rounded">${item.type || 'Other'}</span>
                                 </div>
-                                <p class="text-[10px] font-black text-green-500 mt-1">₹${item.price}</p>
+                                <p class="text-[10px] font-black text-green-500 mt-1">₹${item.price || 0}</p>
                             </div>
                             <button onclick="viewPurchaseDetail(${index})" class="btn-primary text-[9px] font-black uppercase px-4 py-2 rounded-lg shrink-0">View</button>`;
                         container.appendChild(div);
@@ -1277,7 +1359,7 @@
                         div.innerHTML = `
                             <div>
                                 <p class="text-[11px] font-black text-white uppercase mb-0.5">₹${item.amount} Deposit</p>
-                                <p class="text-[9px] text-gray-500 font-bold">${item.date} • ${item.id}</p>
+                                <p class="text-[9px] text-gray-500 font-bold">${new Date(item.date).toLocaleDateString()} • ${item.utr?.slice(-4) || 'N/A'}</p>
                             </div>
                             <span class="${statusColor} text-[9px] font-black uppercase px-3 py-1 rounded-lg border">${status}</span>`;
                         container.appendChild(div);
@@ -1291,8 +1373,8 @@
         window.viewPurchaseDetail = function(index) {
             const item = purchaseHistory[index];
             if(!item) return;
-            document.getElementById('detail-title').innerText = item.title;
-            document.getElementById('detail-data').value = item.data;
+            document.getElementById('detail-title').innerText = item.title || 'Purchase Details';
+            document.getElementById('detail-data').value = item.data || 'No data available';
             closeAllModals();
             document.getElementById('modal-purchase-detail').classList.replace('hidden', 'flex');
         }
@@ -1305,7 +1387,7 @@
         }
 
         window.filterHome = function(cat, btn) {
-            currentFilter = cat.toLowerCase();
+            currentFilter = cat;
             document.querySelectorAll('.category-btn').forEach(b => { 
                 b.classList.remove('tab-active'); 
                 b.classList.add('tab-inactive'); 
@@ -1322,18 +1404,25 @@
             
             let bgColor = 'bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20';
             let textColor = 'text-white';
+            let icon = 'fa-info-circle';
             
             if(type === 'error') {
                 bgColor = 'bg-gradient-to-br from-red-500/10 to-red-500/5 border-red-500/20';
+                icon = 'fa-exclamation-circle';
             } else if(type === 'success') {
                 bgColor = 'bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20';
+                icon = 'fa-check-circle';
             }
             
             toast.className = `px-6 py-3 rounded-full backdrop-blur-xl border shadow-2xl animate-slide-down mx-auto w-max ${bgColor} ${textColor}`;
-            toast.innerHTML = `<span class="text-xs font-bold uppercase">${message}</span>`;
+            toast.innerHTML = `<i class="fa-solid ${icon} mr-2"></i><span class="text-xs font-bold uppercase">${message}</span>`;
             toastArea.appendChild(toast);
             
-            setTimeout(() => toast.remove(), 3000);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-10px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
         // Enhanced modal management
@@ -1354,12 +1443,12 @@
             document.querySelectorAll('section').forEach(e => e.classList.add('hidden')); 
             document.getElementById(`page-${t}`).classList.remove('hidden');
             document.querySelectorAll('[id^="nav-"]').forEach(n => { 
-                n.className = "flex flex-col items-center gap-1.5 text-gray-600 transition-all w-1/3 group";
+                n.classList.remove('nav-active');
                 n.querySelector('div').className = "w-10 h-10 rounded-full bg-gradient-to-br from-gray-500/10 to-gray-500/5 flex items-center justify-center group-hover:scale-110 transition-all";
             });
             
             const activeNav = document.getElementById(`nav-${t}`);
-            activeNav.className = "flex flex-col items-center gap-1.5 nav-active transition-all w-1/3 group";
+            activeNav.classList.add('nav-active');
             activeNav.querySelector('div').className = "w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center group-hover:scale-110 transition-all";
         }
 
@@ -1377,37 +1466,49 @@
             document.getElementById('modal-logout').classList.replace('hidden','flex'); 
         }
 
-        window.confirmLogout = function() { 
-            signOut(auth).then(() => location.reload()); 
+        window.confirmLogout = async function() { 
+            try {
+                await signOut(auth);
+                showToast('Logged out successfully', 'success');
+                setTimeout(() => location.reload(), 1000);
+            } catch(error) {
+                showToast('Logout failed: ' + error.message, 'error');
+            }
         }
 
         window.copyUPI = function() { 
-            navigator.clipboard.writeText(document.getElementById('admin-upi').innerText); 
-            showToast('UPI ID copied!', 'success'); 
+            const upi = document.getElementById('admin-upi').innerText;
+            if(upi && upi !== 'LOADING...') {
+                navigator.clipboard.writeText(upi);
+                showToast('UPI ID copied!', 'success');
+            }
         }
 
         // Enhanced request sending
-        window.sendRec = function() {
-            const txt = document.getElementById('rec-text').value;
-            if(!txt || txt.trim().length < 5) {
-                showToast('Please enter a detailed request', 'error');
+        window.sendRec = async function() {
+            const txt = document.getElementById('rec-text').value.trim();
+            if(!txt || txt.length < 5) {
+                showToast('Please enter a detailed request (min 5 chars)', 'error');
                 return;
             }
             
-            push(ref(db, 'requests'), { 
-                uid: UID, 
-                text: txt.trim(), 
-                date: new Date().toLocaleString(),
-                userEmail: auth.currentUser?.email || 'Unknown',
-                userName: document.getElementById('p-name').innerText,
-                status: 'Pending'
-            }).then(() => {
+            try {
+                await push(ref(db, 'requests'), { 
+                    uid: UID, 
+                    text: txt, 
+                    date: new Date().toISOString(),
+                    userEmail: auth.currentUser?.email || 'Unknown',
+                    userName: userData.name || 'User',
+                    status: 'Pending'
+                });
+                
                 showToast('Request sent to admin!', 'success'); 
                 closeAllModals();
                 document.getElementById('rec-text').value = '';
-            }).catch(error => {
-                showToast('Error sending request', 'error');
-            });
+            } catch(error) {
+                console.error('Request error:', error);
+                showToast('Error sending request: ' + error.message, 'error');
+            }
         }
 
         // Initialize on load
@@ -1427,6 +1528,14 @@
                     }
                 }
             });
+            
+            // Auto-hide skeleton after 2 seconds
+            setTimeout(() => {
+                const skeleton = document.querySelector('.skeleton');
+                if(skeleton && skeleton.parentElement) {
+                    skeleton.parentElement.remove();
+                }
+            }, 2000);
         });
 
     </script>
