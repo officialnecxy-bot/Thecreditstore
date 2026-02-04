@@ -557,7 +557,7 @@
                     <div class="flex items-center gap-2 mb-6 text-yellow-500 text-xs"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><span class="text-gray-500 font-bold ml-2">(5.0 Verified)</span></div>
                     <p id="prod-desc" class="text-sm text-gray-400 leading-relaxed mb-6 border-l-2 border-primary/30 pl-4 bg-gradient-to-r from-primary/5 to-transparent p-2 rounded-r-xl">Premium quality product directly from server. Instant delivery.</p>
                     <div class="glass-panel p-5 rounded-2xl flex justify-between items-center border border-white/5">
-                        <div><p class="text-[10px] text-gray-500 font-bold uppercase mb-1">Price</p><div class="flex items-baseline gap-2"><span id="prod-price" class="text-3xl font-black text-green-500">₹0</span></div></div>
+                        <div><p class="text-[10px] text-gray-500 font-bold uppercase mb-1">Price</p><div class="flex items-baseline gap-2"><span id="prod-price" class="text-3xl font-black text-green-500">₹0</span><span id="daily-increase-note" class="text-[9px] text-yellow-500 font-bold hidden">(+₹1.5 daily from day 3)</span></div></div>
                         <button onclick="openConfirmModal()" class="btn-primary text-white px-6 py-3 rounded-xl font-black uppercase text-xs tracking-widest active:scale-95 transition-all">Buy Now</button>
                     </div>
                 </div>
@@ -615,6 +615,7 @@
             <div class="glass-panel rounded-2xl p-4 mb-6 border border-white/5">
                 <p class="text-[9px] text-gray-500 font-bold uppercase mb-1">Total Amount</p>
                 <p class="text-3xl font-black text-green-500">₹<span id="confirm-item-price">0</span></p>
+                <p id="price-breakdown" class="text-[9px] text-yellow-500 font-bold mt-1 hidden">Base: ₹<span id="base-price">0</span> + Daily Increase: ₹<span id="daily-increase">0</span></p>
             </div>
 
             <div class="flex gap-3">
@@ -787,7 +788,7 @@
         let settings = {};
         let userData = {};
 
-        // Enhanced product age calculation
+        // Enhanced product age calculation with days count
         function getProductAge(addedOn) {
             if (!addedOn) return null;
             try {
@@ -802,11 +803,43 @@
             }
         }
 
-        // Simple price calculation - NO EXTRA CHARGES
+        // Get exact days since product was added
+        function getDaysSinceAdded(addedOn) {
+            if (!addedOn) return 0;
+            try {
+                const uploadDate = new Date(addedOn);
+                const now = new Date();
+                const diffTime = Math.abs(now - uploadDate);
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                return diffDays;
+            } catch(e) {
+                return 0;
+            }
+        }
+
+        // Enhanced price calculation for Indo products with daily increase of ₹1.5
         function calculateDynamicPrice(p) {
             if (!p || !p.price) return 0;
-            // Just return the base price - no extra charges
-            return parseInt(p.price);
+            
+            const basePrice = parseInt(p.price);
+            const productType = (p.type || '').toLowerCase();
+            
+            // Apply daily increase only for Indo products
+            if (productType.includes('indo')) {
+                const daysSinceAdded = getDaysSinceAdded(p.addedOn);
+                
+                // Daily increase starts from 3rd day (day index 2)
+                if (daysSinceAdded >= 2) {
+                    const daysOfIncrease = daysSinceAdded - 1; // Start counting increases from day 3
+                    const dailyIncreaseAmount = 1.5; // ₹1.5 increase per day
+                    const totalIncrease = Math.floor(daysOfIncrease * dailyIncreaseAmount); // Round down to avoid decimals
+                    
+                    return basePrice + totalIncrease;
+                }
+            }
+            
+            // For non-Indo products, return base price
+            return basePrice;
         }
 
         // Enhanced date formatting
@@ -1027,7 +1060,7 @@
             }
         });
 
-        // Enhanced product grid rendering
+        // Enhanced product grid rendering with daily price increase info
         function renderGrid() {
             const grid = document.getElementById('product-grid');
             
@@ -1087,6 +1120,9 @@
                 const ageText = (p.type && p.type.toLowerCase().includes('indo')) ? getProductAge(p.addedOn) : null;
                 const stock = parseInt(p.stock) || 0;
                 const stockColor = stock > 10 ? 'text-green-500' : stock > 3 ? 'text-yellow-500' : 'text-red-500';
+                const daysSinceAdded = getDaysSinceAdded(p.addedOn);
+                const isIndo = p.type && p.type.toLowerCase().includes('indo');
+                const hasDailyIncrease = isIndo && daysSinceAdded >= 2;
                 
                 return `
                 <div class="product-card rounded-2xl p-4 flex items-center gap-4 group animate-fade-in" onclick="openProductModal('${p.id}')">
@@ -1098,6 +1134,7 @@
                             <span class="text-[7px] font-black text-white/40 uppercase tracking-widest bg-white/5 px-1.5 py-0.5 rounded-md">${p.type || 'Product'}</span>
                             ${ageText ? `<span class="text-[7px] font-black text-yellow-500 uppercase tracking-widest bg-yellow-500/10 px-1.5 py-0.5 rounded-md">${ageText}</span>` : ''}
                             <span class="text-[7px] font-bold ${stockColor} uppercase">Stock: ${stock}</span>
+                            ${hasDailyIncrease ? `<span class="text-[7px] font-black text-red-500 uppercase tracking-widest bg-red-500/10 px-1.5 py-0.5 rounded-md">+₹1.5/day</span>` : ''}
                         </div>
                         <h3 class="font-bold text-[13px] text-white leading-tight truncate">${p.title || 'Untitled Product'}</h3>
                         <div class="flex flex-col">
@@ -1132,12 +1169,24 @@
             }
             
             const finalPrice = calculateDynamicPrice(selectedProduct);
+            const isIndo = selectedProduct.type && selectedProduct.type.toLowerCase().includes('indo');
+            const daysSinceAdded = getDaysSinceAdded(selectedProduct.addedOn);
+            const hasDailyIncrease = isIndo && daysSinceAdded >= 2;
+            
             document.getElementById('buy-view').classList.remove('hidden');
             document.getElementById('success-view').classList.add('hidden');
             document.getElementById('prod-title').innerText = selectedProduct.title || 'Untitled Product';
             document.getElementById('prod-cat').innerText = selectedProduct.type || 'Other';
             document.getElementById('prod-price').innerText = '₹' + finalPrice;
             document.getElementById('prod-date-modal').innerText = getFormattedProductDate(selectedProduct.addedOn);
+            
+            // Show daily increase note for Indo products
+            const dailyNote = document.getElementById('daily-increase-note');
+            if (hasDailyIncrease) {
+                dailyNote.classList.remove('hidden');
+            } else {
+                dailyNote.classList.add('hidden');
+            }
             
             const ageText = (selectedProduct.type && selectedProduct.type.toLowerCase().includes('indo')) ? getProductAge(selectedProduct.addedOn) : null;
             const ageEl = document.getElementById('prod-age-modal');
@@ -1171,8 +1220,25 @@
             }
             
             const finalPrice = calculateDynamicPrice(selectedProduct);
+            const isIndo = selectedProduct.type && selectedProduct.type.toLowerCase().includes('indo');
+            const daysSinceAdded = getDaysSinceAdded(selectedProduct.addedOn);
+            const hasDailyIncrease = isIndo && daysSinceAdded >= 2;
+            
             document.getElementById('confirm-item-name').innerText = selectedProduct.title || 'Product';
             document.getElementById('confirm-item-price').innerText = finalPrice;
+            
+            // Show price breakdown for Indo products with daily increase
+            const priceBreakdown = document.getElementById('price-breakdown');
+            if (hasDailyIncrease) {
+                const basePrice = parseInt(selectedProduct.price);
+                const dailyIncrease = finalPrice - basePrice;
+                document.getElementById('base-price').innerText = basePrice;
+                document.getElementById('daily-increase').innerText = dailyIncrease;
+                priceBreakdown.classList.remove('hidden');
+            } else {
+                priceBreakdown.classList.add('hidden');
+            }
+            
             const m = document.getElementById('modal-confirm-purchase');
             m.classList.remove('hidden'); 
             m.classList.add('flex');
@@ -1237,7 +1303,9 @@
                     data: selectedProduct.data || '',
                     type: selectedProduct.type,
                     productId: selectedProduct.id,
-                    transactionId: transactionId
+                    transactionId: transactionId,
+                    basePrice: parseInt(selectedProduct.price),
+                    dailyIncrease: finalPrice - parseInt(selectedProduct.price)
                 };
                 
                 // Update all at once
@@ -1346,6 +1414,19 @@
                     purchaseHistory.forEach((item, index) => {
                         const div = document.createElement('div');
                         div.className = "glass-panel p-4 rounded-2xl border border-white/5 flex justify-between items-center animate-fade-in";
+                        
+                        // Check if it's an Indo product with daily increase
+                        const isIndo = item.type && item.type.toLowerCase().includes('indo');
+                        const hasDailyIncrease = isIndo && item.dailyIncrease && item.dailyIncrease > 0;
+                        
+                        let priceInfo = `₹${item.price || 0}`;
+                        if (hasDailyIncrease) {
+                            priceInfo = `<div class="text-left">
+                                <p class="text-[10px] font-black text-green-500">₹${item.price}</p>
+                                <p class="text-[7px] text-yellow-500 font-bold">(Base: ₹${item.basePrice} + Daily: ₹${item.dailyIncrease})</p>
+                            </div>`;
+                        }
+                        
                         div.innerHTML = `
                             <div class="flex-1 pr-4">
                                 <p class="text-[11px] font-black text-white uppercase mb-0.5 truncate">${item.title || 'Purchase'}</p>
@@ -1353,9 +1434,11 @@
                                     <p class="text-[9px] text-gray-500 font-bold">${new Date(item.date).toLocaleDateString()}</p>
                                     <span class="text-[7px] font-black text-primary uppercase bg-primary/10 px-1.5 py-0.5 rounded">${item.type || 'Other'}</span>
                                 </div>
-                                <p class="text-[10px] font-black text-green-500 mt-1">₹${item.price || 0}</p>
                             </div>
-                            <button onclick="viewPurchaseDetail(${index})" class="btn-primary text-[9px] font-black uppercase px-4 py-2 rounded-lg shrink-0">View</button>`;
+                            <div class="flex flex-col items-end">
+                                ${priceInfo}
+                                <button onclick="viewPurchaseDetail(${index})" class="btn-primary text-[9px] font-black uppercase px-4 py-2 rounded-lg shrink-0 mt-1">View</button>
+                            </div>`;
                         container.appendChild(div);
                     });
                 }
