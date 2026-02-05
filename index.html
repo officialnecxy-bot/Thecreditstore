@@ -270,6 +270,168 @@
             animation: loading 1.5s infinite;
         }
 
+        /* Gallery Styles */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+        }
+        
+        .gallery-item {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            aspect-ratio: 9/16;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: linear-gradient(135deg, rgba(15, 15, 15, 0.9) 0%, rgba(10, 10, 10, 0.9) 100%);
+        }
+        
+        .gallery-item:hover {
+            transform: translateY(-5px) scale(1.03);
+            border-color: rgba(255, 0, 60, 0.3);
+            box-shadow: 0 10px 30px rgba(255, 0, 60, 0.2);
+        }
+        
+        .gallery-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .gallery-item:hover .gallery-image {
+            transform: scale(1.05);
+        }
+        
+        .gallery-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            padding: 15px;
+            transform: translateY(10px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .gallery-item:hover .gallery-overlay {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .gallery-description {
+            font-size: 11px;
+            color: #ddd;
+            line-height: 1.4;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .gallery-item:hover .gallery-description {
+            max-height: 100px;
+            margin-top: 8px;
+        }
+        
+        /* Fullscreen Gallery Modal */
+        .gallery-fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            background: rgba(5, 5, 5, 0.98);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .gallery-fullscreen.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .fullscreen-image-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .fullscreen-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+        }
+        
+        .gallery-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 15px;
+            z-index: 1001;
+        }
+        
+        .gallery-control-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .gallery-control-btn:hover {
+            background: rgba(255, 0, 60, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .gallery-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.95), transparent);
+            padding: 30px 20px 20px;
+            text-align: center;
+            max-height: 40%;
+            overflow-y: auto;
+        }
+        
+        .fullscreen-description {
+            color: #ddd;
+            font-size: 14px;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .gallery-upload-date {
+            font-size: 12px;
+            color: #888;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
         @keyframes loading {
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
@@ -439,6 +601,23 @@
             </div>
         </section>
 
+        <!-- Gallery Page -->
+        <section id="page-gallery" class="px-4 pt-4 animate-fade-in hidden">
+            <h2 class="text-xl font-black uppercase text-center mb-6 text-white tracking-[4px] gradient-text">Premium Gallery</h2>
+            <p class="text-center text-gray-500 text-xs font-bold uppercase tracking-widest mb-8">Curated collection of premium visuals</p>
+            
+            <div id="gallery-grid" class="gallery-grid pb-24">
+                <!-- Gallery items will be loaded here -->
+                <div class="text-center py-16">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center mx-auto mb-4 border border-primary/20">
+                        <i class="fa-solid fa-images text-2xl text-primary"></i>
+                    </div>
+                    <p class="text-gray-500 font-black uppercase tracking-[0.3em] text-sm mb-2">Loading Gallery...</p>
+                    <p class="text-gray-600 text-[10px]">Premium content will appear here</p>
+                </div>
+            </div>
+        </section>
+
         <!-- Profile Page -->
         <section id="page-profile" class="px-5 pt-4 animate-fade-in hidden">
             <!-- Premium Profile Card -->
@@ -508,26 +687,50 @@
 
         <!-- Premium Bottom Navigation -->
         <div class="fixed bottom-0 left-0 right-0 premium-nav h-[85px] rounded-t-[35px] flex justify-around items-center px-6 z-40">
-            <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center gap-1.5 nav-active transition-all w-1/3 group">
+            <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center gap-1.5 nav-active transition-all w-1/4 group">
                 <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center group-hover:scale-110 transition-all">
                     <i class="fa-solid fa-store text-xl group-hover:scale-110 transition-all"></i>
                 </div>
                 <span class="text-[9px] font-bold uppercase">Shop</span>
             </button>
             
-            <button onclick="switchTab('wallet')" id="nav-wallet" class="flex flex-col items-center gap-1.5 text-gray-600 transition-all w-1/3 group">
+            <button onclick="switchTab('wallet')" id="nav-wallet" class="flex flex-col items-center gap-1.5 text-gray-600 transition-all w-1/4 group">
                 <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-500/10 to-gray-500/5 flex items-center justify-center group-hover:scale-110 transition-all">
                     <i class="fa-solid fa-wallet text-xl group-hover:scale-110 transition-all"></i>
                 </div>
                 <span class="text-[9px] font-bold uppercase">Wallet</span>
             </button>
             
-            <button onclick="switchTab('profile')" id="nav-profile" class="flex flex-col items-center gap-1.5 text-gray-600 transition-all w-1/3 group">
+            <button onclick="switchTab('gallery')" id="nav-gallery" class="flex flex-col items-center gap-1.5 text-gray-600 transition-all w-1/4 group">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-500/10 to-gray-500/5 flex items-center justify-center group-hover:scale-110 transition-all">
+                    <i class="fa-solid fa-images text-xl group-hover:scale-110 transition-all"></i>
+                </div>
+                <span class="text-[9px] font-bold uppercase">Gallery</span>
+            </button>
+            
+            <button onclick="switchTab('profile')" id="nav-profile" class="flex flex-col items-center gap-1.5 text-gray-600 transition-all w-1/4 group">
                 <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-500/10 to-gray-500/5 flex items-center justify-center group-hover:scale-110 transition-all">
                     <i class="fa-solid fa-user text-xl group-hover:scale-110 transition-all"></i>
                 </div>
                 <span class="text-[9px] font-bold uppercase">Profile</span>
             </button>
+        </div>
+    </div>
+
+    <!-- Fullscreen Gallery Modal -->
+    <div id="gallery-fullscreen" class="gallery-fullscreen">
+        <div class="gallery-controls">
+            <button onclick="closeFullscreenGallery()" class="gallery-control-btn">
+                <i class="fa-solid fa-times text-lg"></i>
+            </button>
+        </div>
+        <div class="fullscreen-image-container">
+            <img id="fullscreen-image" class="fullscreen-image" src="" alt="">
+        </div>
+        <div class="gallery-info">
+            <h3 id="fullscreen-title" class="text-xl font-black text-white mb-2"></h3>
+            <p id="fullscreen-description" class="fullscreen-description"></p>
+            <p id="fullscreen-date" class="gallery-upload-date"></p>
         </div>
     </div>
 
@@ -764,13 +967,13 @@
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyCJmwYY_s9dYFR5uCf4CHyaVG2ljwGAC2E",
-            authDomain: "minespro-4267c.firebaseapp.com",
-            projectId: "minespro-4267c",
-            storageBucket: "minespro-4267c.firebasestorage.app",
-            messagingSenderId: "747684645622",
-            appId: "1:747684645622:web:e9a0415c87a992f3d7bad7"
-        };
+  apiKey: "AIzaSyAzGcDXubeeAdzlo8kfFa2naEilB3a7WAA",
+  authDomain: "necxelgram.firebaseapp.com",
+  projectId: "necxelgram",
+  storageBucket: "necxelgram.firebasestorage.app",
+  messagingSenderId: "259144804970",
+  appId: "1:259144804970:web:9809fa52b6ff55f0f83813"
+};
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
@@ -787,6 +990,8 @@
         let currentAuthMode = 'login';
         let settings = {};
         let userData = {};
+        let galleryItems = [];
+        let currentGalleryItem = null;
 
         // Enhanced product age calculation with days count
         function getProductAge(addedOn) {
@@ -856,6 +1061,19 @@
             }
         }
 
+        // Format date for gallery
+        function formatGalleryDate(rawDate) {
+            if (!rawDate) return "Date not available";
+            try {
+                const date = new Date(rawDate);
+                if (isNaN(date.getTime())) return "Invalid Date";
+                const options = { day: 'numeric', month: 'short', year: 'numeric' };
+                return date.toLocaleDateString('en-US', options);
+            } catch(e) {
+                return rawDate;
+            }
+        }
+
         // Auth state observer
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -900,11 +1118,86 @@
                         depositHistory = []; 
                     }
                 });
+                
+                // Listen to gallery data
+                onValue(ref(db, 'gallery'), (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) { 
+                        galleryItems = Object.keys(data).map(key => ({
+                            id: key,
+                            ...data[key]
+                        })).reverse(); // Show newest first
+                        renderGallery();
+                    } else {
+                        galleryItems = [];
+                        renderGallery();
+                    }
+                });
             } else { 
                 document.getElementById('auth-screen').style.display = 'flex'; 
                 document.getElementById('main-app').style.display = 'none'; 
             }
         });
+
+        // Render gallery items
+        function renderGallery() {
+            const grid = document.getElementById('gallery-grid');
+            
+            if(galleryItems.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-20 text-center">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center mx-auto mb-4 border border-primary/20">
+                            <i class="fa-solid fa-images text-2xl text-primary"></i>
+                        </div>
+                        <p class="text-gray-500 font-black uppercase tracking-[0.3em] text-sm mb-2">No Images Available</p>
+                        <p class="text-gray-600 text-[10px]">Gallery content will be added by admin</p>
+                    </div>`;
+                return;
+            }
+
+            grid.innerHTML = galleryItems.map(item => {
+                const hasDescription = item.description && item.description.trim().length > 0;
+                const uploadDate = formatGalleryDate(item.uploadedAt);
+                
+                return `
+                <div class="gallery-item animate-fade-in" onclick="openFullscreenGallery('${item.id}')">
+                    <img src="${item.imageUrl}" alt="${item.title || 'Gallery Image'}" class="gallery-image" loading="lazy">
+                    <div class="gallery-overlay">
+                        <h3 class="text-sm font-black text-white truncate">${item.title || 'Untitled'}</h3>
+                        ${hasDescription ? `<p class="gallery-description">${item.description}</p>` : ''}
+                        <p class="text-[8px] text-gray-400 font-bold mt-2">${uploadDate}</p>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // Open fullscreen gallery
+        window.openFullscreenGallery = function(id) {
+            const item = galleryItems.find(i => i.id === id);
+            if (!item) {
+                showToast('Gallery item not found', 'error');
+                return;
+            }
+            
+            currentGalleryItem = item;
+            document.getElementById('fullscreen-image').src = item.imageUrl;
+            document.getElementById('fullscreen-title').innerText = item.title || 'Gallery Image';
+            document.getElementById('fullscreen-description').innerText = item.description || 'No description provided.';
+            document.getElementById('fullscreen-date').innerText = `Uploaded on ${formatGalleryDate(item.uploadedAt)}`;
+            
+            const fullscreenModal = document.getElementById('gallery-fullscreen');
+            fullscreenModal.classList.add('active');
+            
+            // Prevent body scrolling
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close fullscreen gallery
+        window.closeFullscreenGallery = function() {
+            const fullscreenModal = document.getElementById('gallery-fullscreen');
+            fullscreenModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
 
         // FIXED: Enhanced auth toggle - Now working perfectly
         window.toggleAuth = function(mode) {
@@ -1506,6 +1799,20 @@
             renderGrid();
         }
 
+        // Enhanced tab switching with gallery support
+        window.switchTab = function(t) { 
+            document.querySelectorAll('section').forEach(e => e.classList.add('hidden')); 
+            document.getElementById(`page-${t}`).classList.remove('hidden');
+            document.querySelectorAll('[id^="nav-"]').forEach(n => { 
+                n.classList.remove('nav-active');
+                n.querySelector('div').className = "w-10 h-10 rounded-full bg-gradient-to-br from-gray-500/10 to-gray-500/5 flex items-center justify-center group-hover:scale-110 transition-all";
+            });
+            
+            const activeNav = document.getElementById(`nav-${t}`);
+            activeNav.classList.add('nav-active');
+            activeNav.querySelector('div').className = "w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center group-hover:scale-110 transition-all";
+        }
+
         // Enhanced toast function
         window.showToast = function(message, type = 'info') { 
             const toastArea = document.getElementById('toast-area');
@@ -1545,20 +1852,6 @@
         window.closeModal = function(modalId) {
             document.getElementById(modalId).classList.add('hidden');
             document.getElementById(modalId).classList.remove('flex');
-        }
-
-        // Enhanced tab switching
-        window.switchTab = function(t) { 
-            document.querySelectorAll('section').forEach(e => e.classList.add('hidden')); 
-            document.getElementById(`page-${t}`).classList.remove('hidden');
-            document.querySelectorAll('[id^="nav-"]').forEach(n => { 
-                n.classList.remove('nav-active');
-                n.querySelector('div').className = "w-10 h-10 rounded-full bg-gradient-to-br from-gray-500/10 to-gray-500/5 flex items-center justify-center group-hover:scale-110 transition-all";
-            });
-            
-            const activeNav = document.getElementById(`nav-${t}`);
-            activeNav.classList.add('nav-active');
-            activeNav.querySelector('div').className = "w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center group-hover:scale-110 transition-all";
         }
 
         // Modal openers
@@ -1645,6 +1938,20 @@
                     skeleton.parentElement.remove();
                 }
             }, 2000);
+            
+            // Close fullscreen gallery on ESC key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeFullscreenGallery();
+                }
+            });
+            
+            // Close fullscreen gallery on click outside image
+            document.getElementById('gallery-fullscreen').addEventListener('click', (e) => {
+                if (e.target.id === 'gallery-fullscreen') {
+                    closeFullscreenGallery();
+                }
+            });
         });
 
     </script>
