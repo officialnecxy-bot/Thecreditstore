@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NECXY CREDIT STORE</title>
+    <title>NECXY STORE | PREMIUM</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -19,7 +19,7 @@
                         accent: '#22C55E',
                         indo: '#833ab4',
                         method: '#ff5e62',
-                        cc: '#11998e',
+                        igcc: '#11998e',
                         bin: '#2193b0',
                         paynow: '#654ea3'
                     },
@@ -610,7 +610,7 @@
                     <div class="mb-8 animate-slide-in-left">
                         <label class="text-[9px] font-bold text-gray-500 uppercase ml-2 mb-1 block">Password</label>
                         <div class="bg-black/30 border border-white/10 rounded-xl px-4 py-3 flex items-center gap-3 focus-within:border-primary transition-colors">
-                            <i class="fa-solid fa-lock text-gray-500 text-sm"></i>
+                            <i class="fa-brands fa-instagram text-gray-500 text-sm"></i>
                             <input type="password" id="auth-pass" placeholder="••••••••" class="bg-transparent w-full text-sm font-bold text-white outline-none">
                         </div>
                     </div>
@@ -647,9 +647,9 @@
             <div class="flex gap-3 overflow-x-auto no-scrollbar mb-8 pb-1 px-1">
                 <button onclick="filterHome('all', this)" class="category-btn tab-active px-6 py-2.5 rounded-xl text-[11px] font-black uppercase whitespace-nowrap transition-all shadow-lg">All</button>
                 <button onclick="filterHome('indo', this)" class="category-btn tab-inactive px-6 py-2.5 rounded-xl text-[11px] font-black uppercase whitespace-nowrap transition-all">Indo</button>
+                <button onclick="filterHome('cc', this)" class="category-btn tab-inactive px-6 py-2.5 rounded-xl text-[11px] font-black uppercase whitespace-nowrap transition-all">IGCC</button>
                 <button onclick="filterHome('paynow', this)" class="category-btn tab-inactive px-6 py-2.5 rounded-xl text-[11px] font-black uppercase whitespace-nowrap transition-all">Pay Now</button>
                 <button onclick="filterHome('bin', this)" class="category-btn tab-inactive px-6 py-2.5 rounded-xl text-[11px] font-black uppercase whitespace-nowrap transition-all">Bins</button>
-                <button onclick="filterHome('cc', this)" class="category-btn tab-inactive px-6 py-2.5 rounded-xl text-[11px] font-black uppercase whitespace-nowrap transition-all">CC's</button>
                 <button onclick="filterHome('method', this)" class="category-btn tab-inactive px-6 py-2.5 rounded-xl text-[11px] font-black uppercase whitespace-nowrap transition-all">Method</button>
             </div>
             <div id="product-grid" class="grid grid-cols-1 gap-4 pb-20">
@@ -1143,7 +1143,6 @@
         let readNotifications = [];
         let currentNotificationFilter = 'all';
         let unreadNotificationCount = 0;
-        let lastBalanceCheck = 0;
 
         // Enhanced product age calculation with days count
         function getProductAge(addedOn) {
@@ -1254,48 +1253,6 @@
             }
         }
 
-        // NEW: Function to create automatic notifications
-        async function createNotification(subject, message, type = 'system') {
-            if (!UID) return;
-            
-            try {
-                const notificationData = {
-                    subject: subject,
-                    message: message,
-                    type: type,
-                    sentAt: new Date().toISOString(),
-                    sentByName: 'System',
-                    isRead: false,
-                    userId: UID
-                };
-                
-                await push(ref(db, 'userNotifications/' + UID), notificationData);
-                
-                // Update local notifications count
-                if (!notifications.find(n => n.subject === subject && n.message === message)) {
-                    notifications.unshift({
-                        id: Date.now().toString(),
-                        ...notificationData
-                    });
-                    updateUnreadCount();
-                }
-            } catch (error) {
-                console.error('Error creating notification:', error);
-            }
-        }
-
-        // NEW: Check for low balance and create notification
-        function checkLowBalance(newBalance) {
-            if (newBalance < 100 && lastBalanceCheck !== newBalance) {
-                lastBalanceCheck = newBalance;
-                createNotification(
-                    'Low Balance Alert',
-                    `Your balance is ₹${newBalance}. Add funds to continue shopping!`,
-                    'warning'
-                );
-            }
-        }
-
         // Auth state observer
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -1312,16 +1269,10 @@
                         if(data.isBanned) { 
                             signOut(auth); 
                             showToast("Access Denied: Account Suspended", 'error'); 
-                            createNotification('Account Suspended', 'Your account has been suspended. Contact support for assistance.', 'error');
                             return; 
                         }
                         
-                        const oldBalance = balance;
                         balance = data.balance || 0;
-                        
-                        // Check for low balance
-                        checkLowBalance(balance);
-                        
                         document.getElementById('display-balance').innerText = balance;
                         document.getElementById('header-balance').innerText = balance;
                         document.getElementById('p-name').innerText = data.name || "User";
@@ -1334,28 +1285,15 @@
                             purchaseHistory = [];
                         }
                         
-                        // Listen to user notifications
-                        onValue(ref(db, 'userNotifications/' + UID), (snapshot) => {
-                            const data = snapshot.val();
-                            if (data) { 
-                                notifications = Object.keys(data).map(key => ({
-                                    id: key,
-                                    ...data[key]
-                                })).sort((a, b) => new Date(b.sentAt) - new Date(a.sentAt));
-                                
-                                updateUnreadCount();
-                                
-                                if (document.getElementById('page-notifications') && !document.getElementById('page-notifications').classList.contains('hidden')) {
-                                    renderNotifications();
-                                }
-                            } else {
-                                notifications = [];
-                                updateUnreadCount();
-                                if (document.getElementById('page-notifications') && !document.getElementById('page-notifications').classList.contains('hidden')) {
-                                    renderNotifications();
-                                }
-                            }
-                        });
+                        // Get user's read notifications
+                        if (data.readNotifications) {
+                            readNotifications = Object.keys(data.readNotifications);
+                        } else {
+                            readNotifications = [];
+                        }
+                        
+                        // Update notification badge
+                        updateNotificationBadge();
                     }
                 });
                 
@@ -1364,29 +1302,7 @@
                     const data = snapshot.val();
                     if(data) {
                         const allDeps = Object.values(data);
-                        const userDeposits = allDeps.filter(d => d.uid == UID);
-                        
-                        // Check for deposit status changes
-                        userDeposits.forEach(deposit => {
-                            const oldDeposit = depositHistory.find(d => d.utr === deposit.utr);
-                            if (oldDeposit && oldDeposit.status !== deposit.status) {
-                                if (deposit.status === 'Completed' || deposit.status === 'Approved') {
-                                    createNotification(
-                                        'Deposit Approved',
-                                        `Your deposit of ₹${deposit.amount} has been approved. Balance updated!`,
-                                        'success'
-                                    );
-                                } else if (deposit.status === 'Rejected') {
-                                    createNotification(
-                                        'Deposit Rejected',
-                                        `Your deposit of ₹${deposit.amount} was rejected. Contact support for details.`,
-                                        'error'
-                                    );
-                                }
-                            }
-                        });
-                        
-                        depositHistory = userDeposits.reverse();
+                        depositHistory = allDeps.filter(d => d.uid == UID).reverse();
                     } else { 
                         depositHistory = []; 
                     }
@@ -1399,7 +1315,7 @@
                         galleryItems = Object.keys(data).map(key => ({
                             id: key,
                             ...data[key]
-                        })).reverse();
+                        })).reverse(); // Show newest first
                         renderGallery();
                     } else {
                         galleryItems = [];
@@ -1407,6 +1323,30 @@
                     }
                 });
                 
+                // NEW: Listen to notifications
+                onValue(ref(db, 'notifications'), (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) { 
+                        notifications = Object.keys(data).map(key => ({
+                            id: key,
+                            ...data[key]
+                        })).sort((a, b) => new Date(b.sentAt) - new Date(a.sentAt)); // Show newest first
+                        
+                        // Update unread count
+                        updateUnreadCount();
+                        
+                        // Render notifications if on notifications page
+                        if (document.getElementById('page-notifications') && !document.getElementById('page-notifications').classList.contains('hidden')) {
+                            renderNotifications();
+                        }
+                    } else {
+                        notifications = [];
+                        updateUnreadCount();
+                        if (document.getElementById('page-notifications') && !document.getElementById('page-notifications').classList.contains('hidden')) {
+                            renderNotifications();
+                        }
+                    }
+                });
             } else { 
                 document.getElementById('auth-screen').style.display = 'flex'; 
                 document.getElementById('main-app').style.display = 'none'; 
@@ -1415,11 +1355,11 @@
 
         // NEW: Update unread notification count
         function updateUnreadCount() {
-            if (!notifications) {
+            if (!notifications || !readNotifications) {
                 unreadNotificationCount = 0;
             } else {
                 unreadNotificationCount = notifications.filter(notification => 
-                    !notification.isRead
+                    !readNotifications.includes(notification.id)
                 ).length;
             }
             
@@ -1439,7 +1379,7 @@
             }
         }
 
-        // NEW: Render notifications
+        // NEW: Render notifications (Mark as Read button removed)
         function renderNotifications() {
             const container = document.getElementById('notifications-list');
             if (!container) return;
@@ -1449,11 +1389,11 @@
             
             if (currentNotificationFilter === 'unread') {
                 filteredNotifications = notifications.filter(notification => 
-                    !notification.isRead
+                    !readNotifications.includes(notification.id)
                 );
             } else if (currentNotificationFilter === 'read') {
                 filteredNotifications = notifications.filter(notification => 
-                    notification.isRead
+                    readNotifications.includes(notification.id)
                 );
             }
             
@@ -1479,39 +1419,24 @@
             }
             
             container.innerHTML = filteredNotifications.map(notification => {
-                const isRead = notification.isRead;
+                const isRead = readNotifications.includes(notification.id);
                 const date = formatNotificationDate(notification.sentAt);
-                const type = notification.type || 'system';
-                let typeColor = 'bg-blue-500/10 text-blue-500 border-blue-500/20';
-                
-                if (type === 'success') typeColor = 'bg-green-500/10 text-green-500 border-green-500/20';
-                if (type === 'error') typeColor = 'bg-red-500/10 text-red-500 border-red-500/20';
-                if (type === 'warning') typeColor = 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20';
-                if (type === 'purchase') typeColor = 'bg-purple-500/10 text-purple-500 border-purple-500/20';
+                const hasImage = notification.imageUrl && notification.imageUrl.trim() !== '';
+                const type = hasImage ? 'withImage' : 'textOnly';
                 
                 return `
                 <div class="notification-card ${isRead ? '' : 'unread'} animate-fade-in">
                     <div class="notification-header">
-                        <span class="notification-type-badge ${typeColor}">
-                            ${type.charAt(0).toUpperCase() + type.slice(1)}
+                        <span class="notification-type-badge ${type === 'withImage' ? 'badge-with-image' : 'badge-text-only'}">
+                            ${type === 'withImage' ? 'With Image' : 'Text Only'}
                         </span>
                         <span class="notification-date">${date}</span>
                     </div>
                     <h3 class="text-lg font-black text-white mb-2">${notification.subject || 'Notification'}</h3>
                     <p class="text-sm text-gray-300 mb-3">${notification.message || ''}</p>
+                    ${hasImage ? `<img src="${notification.imageUrl}" alt="${notification.subject || 'Notification Image'}" class="notification-image" loading="lazy">` : ''}
                     <div class="flex justify-between items-center mt-4">
-                        <p class="text-[8px] text-gray-500">From: <span class="text-primary font-bold">${notification.sentByName || 'System'}</span></p>
-                        <div class="notification-actions">
-                            ${!isRead ? `
-                                <button onclick="markAsRead('${notification.id}')" class="notification-action-btn action-mark-read">
-                                    <i class="fa-solid fa-check mr-1"></i> Mark Read
-                                </button>
-                            ` : `
-                                <button onclick="markAsUnread('${notification.id}')" class="notification-action-btn action-mark-unread">
-                                    <i class="fa-solid fa-eye-slash mr-1"></i> Mark Unread
-                                </button>
-                            `}
-                        </div>
+                        <p class="text-[8px] text-gray-500">From: <span class="text-primary font-bold">${notification.sentByName || 'Admin'}</span></p>
                     </div>
                 </div>`;
             }).join('');
@@ -1539,79 +1464,30 @@
             renderNotifications();
         }
 
-        // NEW: Mark notification as read
-        async function markAsRead(notificationId) {
-            if (!UID) return;
-            
-            try {
-                await update(ref(db, `userNotifications/${UID}/${notificationId}`), { isRead: true });
-                
-                // Update local state
-                const notification = notifications.find(n => n.id === notificationId);
-                if (notification) {
-                    notification.isRead = true;
-                }
-                
-                // Update UI
-                updateUnreadCount();
-                renderNotifications();
-                
-                showToast('Notification marked as read', 'success');
-            } catch (error) {
-                console.error('Error marking notification as read:', error);
-                showToast('Error marking notification as read', 'error');
-            }
-        }
-
-        // NEW: Mark notification as unread
-        async function markAsUnread(notificationId) {
-            if (!UID) return;
-            
-            try {
-                await update(ref(db, `userNotifications/${UID}/${notificationId}`), { isRead: false });
-                
-                // Update local state
-                const notification = notifications.find(n => n.id === notificationId);
-                if (notification) {
-                    notification.isRead = false;
-                }
-                
-                // Update UI
-                updateUnreadCount();
-                renderNotifications();
-                
-                showToast('Notification marked as unread', 'success');
-            } catch (error) {
-                console.error('Error marking notification as unread:', error);
-                showToast('Error marking notification as unread', 'error');
-            }
-        }
-
-        // NEW: Mark all notifications as read
+        // NEW: Mark all notifications as read (when opening notifications tab)
         async function markAllAsRead() {
             if (!UID || notifications.length === 0) return;
             
             try {
                 const updates = {};
                 notifications.forEach(notification => {
-                    updates[`userNotifications/${UID}/${notification.id}/isRead`] = true;
+                    updates[`users/${UID}/readNotifications/${notification.id}`] = true;
                 });
                 
                 await update(ref(db), updates);
                 
                 // Update local state
                 notifications.forEach(notification => {
-                    notification.isRead = true;
+                    if (!readNotifications.includes(notification.id)) {
+                        readNotifications.push(notification.id);
+                    }
                 });
                 
                 // Update UI
                 updateUnreadCount();
                 renderNotifications();
-                
-                showToast('All notifications marked as read', 'success');
             } catch (error) {
                 console.error('Error marking all notifications as read:', error);
-                showToast('Error marking notifications as read', 'error');
             }
         }
 
@@ -1745,16 +1621,9 @@
                         balance: 0, 
                         displayId: Math.floor(100000 + Math.random() * 900000),
                         createdAt: new Date().toISOString(),
-                        lastLogin: new Date().toISOString()
+                        lastLogin: new Date().toISOString(),
+                        readNotifications: {} // Initialize empty read notifications
                     });
-                    
-                    // Create welcome notification
-                    createNotification(
-                        'Welcome to NECXY Store!',
-                        'Your account has been created successfully. Start shopping now!',
-                        'success'
-                    );
-                    
                     showToast('Account created successfully!', 'success');
                 } else {
                     await signInWithEmailAndPassword(auth, email, pass);
@@ -1764,25 +1633,10 @@
                             lastLogin: new Date().toISOString() 
                         });
                     }
-                    
-                    // Create login notification
-                    createNotification(
-                        'Login Successful',
-                        'Welcome back to NECXY Store!',
-                        'success'
-                    );
                 }
             } catch(error) { 
                 btn.innerText = currentAuthMode === 'signup' ? "Create Account" : "Enter Store"; 
                 btn.disabled = false;
-                
-                // Create error notification
-                createNotification(
-                    'Login Failed',
-                    error.message,
-                    'error'
-                );
-                
                 showToast(error.message, 'error'); 
             }
         }
@@ -1884,7 +1738,7 @@
                     
                     // Special handling for different categories
                     if (filter === 'indo') return productType.includes('indo');
-                    if (filter === 'cc') return productType.includes('cc') || productType.includes('credit');
+                    if (filter === 'igcc') return productType.includes('igcc') || productType.includes('credit');
                     if (filter === 'bin') return productType.includes('bin');
                     if (filter === 'paynow') return productType.includes('pay');
                     if (filter === 'method') return productType.includes('method') || productType.includes('tut');
@@ -1953,7 +1807,7 @@
             const t = (type || "").toLowerCase();
             if(t.includes('indo')) return { icon: 'fa-brands fa-instagram', color: 'insta-icon' };
             if(t.includes('bin')) return { icon: 'fa-solid fa-credit-card', color: 'text-blue-500' };
-            if(t.includes('cc')) return { icon: 'fa-solid fa-lock', color: 'text-yellow-500' };
+            if(t.includes('cc')) return { icon: 'fa-brands fa-instagram', color: 'text-yellow-500' };
             if(t.includes('pay')) return { icon: 'fa-solid fa-money-bill-wave', color: 'text-green-500' };
             if(t.includes('method') || t.includes('tut')) return { icon: 'fa-solid fa-fire', color: 'text-orange-500' };
             return { icon: 'fa-solid fa-box', color: 'text-white' };
@@ -2062,14 +1916,6 @@
             // Check balance - EXACT MATCH
             if(balance < finalPrice) { 
                 showToast('Insufficient Balance. Add funds first!', 'error'); 
-                
-                // Create low balance notification
-                createNotification(
-                    'Insufficient Balance',
-                    `You need ₹${finalPrice} to purchase "${selectedProduct.title}" but only have ₹${balance}. Add funds now!`,
-                    'warning'
-                );
-                
                 closeConfirmModal(); 
                 return; 
             }
@@ -2077,14 +1923,6 @@
             // Check stock
             if(stock <= 0) {
                 showToast('Product out of stock!', 'error');
-                
-                // Create out of stock notification
-                createNotification(
-                    'Product Out of Stock',
-                    `"${selectedProduct.title}" is currently out of stock. Check back later!`,
-                    'error'
-                );
-                
                 closeConfirmModal();
                 return;
             }
@@ -2141,13 +1979,6 @@
                 document.getElementById('purchased-data').value = selectedProduct.data || 'No data available';
                 document.getElementById('success-tx-id').innerText = transactionId;
                 
-                // Create purchase success notification
-                createNotification(
-                    'Purchase Successful!',
-                    `You purchased "${selectedProduct.title}" for ₹${finalPrice}. Transaction ID: ${transactionId}`,
-                    'purchase'
-                );
-                
                 showToast('Purchase successful! ₹' + finalPrice + ' deducted', 'success');
                 
                 // Re-render grid to update stock
@@ -2156,13 +1987,6 @@
             } catch(error) {
                 console.error('Purchase error:', error);
                 showToast('Error processing purchase: ' + error.message, 'error');
-                
-                // Create error notification
-                createNotification(
-                    'Purchase Failed',
-                    `Failed to purchase "${selectedProduct.title}". Error: ${error.message}`,
-                    'error'
-                );
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
@@ -2198,7 +2022,7 @@
             
             try {
                 // Submit deposit request
-                const depositRef = await push(ref(db, 'deposits'), { 
+                await push(ref(db, 'deposits'), { 
                     uid: UID, 
                     utr: utr, 
                     amount: amount, 
@@ -2207,13 +2031,6 @@
                     userEmail: auth.currentUser?.email || 'Unknown',
                     userName: userData.name || 'User'
                 });
-                
-                // Create deposit submitted notification
-                createNotification(
-                    'Deposit Submitted',
-                    `Your deposit of ₹${amount} has been submitted. UTR: ${utr}. Status: Pending`,
-                    'success'
-                );
                 
                 closeAllModals(); 
                 document.getElementById('modal-deposit-success').classList.replace('hidden','flex'); 
@@ -2226,13 +2043,6 @@
             } catch(error) {
                 console.error('Deposit error:', error);
                 showToast('Error submitting request: ' + error.message, 'error');
-                
-                // Create error notification
-                createNotification(
-                    'Deposit Failed',
-                    `Failed to submit deposit of ₹${amount}. Error: ${error.message}`,
-                    'error'
-                );
             }
         }
 
@@ -2382,11 +2192,6 @@
             if(type === 'error') {
                 bgColor = 'bg-gradient-to-br from-red-500/10 to-red-500/5 border-red-500/20';
                 icon = 'fa-exclamation-circle';
-                
-                // Create error notification for important errors
-                if (message.includes('insufficient') || message.includes('failed') || message.includes('error')) {
-                    createNotification('Error Occurred', message, 'error');
-                }
             } else if(type === 'success') {
                 bgColor = 'bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20';
                 icon = 'fa-check-circle';
@@ -2466,26 +2271,12 @@
                     status: 'Pending'
                 });
                 
-                // Create request submitted notification
-                createNotification(
-                    'Request Submitted',
-                    'Your product request has been sent to admin. We\'ll review it soon!',
-                    'success'
-                );
-                
                 showToast('Request sent to admin!', 'success'); 
                 closeAllModals();
                 document.getElementById('rec-text').value = '';
             } catch(error) {
                 console.error('Request error:', error);
                 showToast('Error sending request: ' + error.message, 'error');
-                
-                // Create error notification
-                createNotification(
-                    'Request Failed',
-                    `Failed to submit product request. Error: ${error.message}`,
-                    'error'
-                );
             }
         }
 
